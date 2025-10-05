@@ -207,23 +207,26 @@
       </div>
     </section>
 
-    <!-- Cards -->
-    <section class="section container">
-      <div class="grid">
-        <div class="card neon-hover" style="background-image:url('pc1.png')">
-          <h3 data-i18n="cards.configurator">Конфигуратор</h3>
-          <button class="btn" data-i18n="cta.build">Собрать</button>
-        </div>
-        <div class="card neon-hover" style="background-image:url('pc2.png')">
-          <h3 data-i18n="cards.ready">Готовые сборки</h3>
-          <button class="btn" data-i18n="cta.view">Смотреть</button>
-        </div>
-        <div class="card neon-hover" style="background-image:url('pc3.png')">
-          <h3 data-i18n="cards.upgrade">Апгрейд</h3>
-          <button class="btn" data-i18n="cta.start">Начать</button>
-        </div>
-      </div>
-    </section>
+<!-- Cards -->
+<section class="section container">
+  <div class="grid">
+    <div class="card neon-hover" style="background-image:url('pc1.png')">
+      <h3 data-i18n="cards.configurator">Конфигуратор</h3>
+      <button class="btn" data-i18n="cta.build" onclick="window.location.href='configurator.html'">Собрать</button>
+    </div>
+
+    <div class="card neon-hover" style="background-image:url('pc2.png')">
+      <h3 data-i18n="cards.ready">Готовые сборки</h3>
+      <button class="btn" data-i18n="cta.view" onclick="window.location.href='prebuilt.html'">Смотреть</button>
+    </div>
+
+    <div class="card neon-hover" style="background-image:url('pc3.png')">
+      <h3 data-i18n="cards.upgrade">Апгрейд</h3>
+      <button class="btn" data-i18n="cta.start" onclick="window.location.href='upgrade.html'">Начать</button>
+    </div>
+  </div>
+</section>
+
 
     <!-- Why us (restored original) -->
     <section class="section features container" aria-labelledby="whyTitle">
@@ -742,3 +745,4 @@
   </script>
 </body>
 </html>
+
