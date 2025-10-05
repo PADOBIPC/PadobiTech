@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Готовые сборки — PADOBI PC</title>
+  <meta name="description" content="Готовые сборки ПК — PADOBI PC. Подберите сборку по бюджету и задачам, добавьте в корзину или изучите детали." />
+  <link rel="icon" href="photo_2025-09-02_11-12-54.jpg">
+  <style>
+    :root{
+      --bg:#000;
+      --panel:#0b0b0b;
+      --card:#0f0f0f;
+      --muted:#a9a9a9;
+      --text:#fff;
+      --brand:#00f0ef;
+      --accent:#a855f7;
+      --radius:14px;
+      --shadow:0 18px 46px rgba(0,0,0,.75);
+      --container:1200px;
+      --neon-weak: rgba(0,240,239,0.06);
+      --neon-strong: rgba(0,240,239,0.18);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.4;
+    }
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
+    .container{max-width:var(--container);margin:0 auto;padding:0 20px}
+
+    /* Header */
+    header{
+      position:sticky;top:0;z-index:120;background:var(--bg);
+      border-bottom:1px solid rgba(255,255,255,0.03);
+      box-shadow:0 0 20px rgba(0,255,255,.04);
+      backdrop-filter: blur(4px);
+    }
+    .nav{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand__logo{width:42px;height:42px;border-radius:10px;overflow:hidden;box-shadow:0 0 10px rgba(0,255,255,.12)}
+    .brand__text{font-weight:900;letter-spacing:.6px;text-transform:uppercase}
+    .actions{display:flex;align-items:center;gap:12px}
+    .lang{display:flex;gap:8px}
+    .lang button{height:34px;padding:0 10px;border-radius:8px;border:1px solid #232323;background:#0d0d0d;color:var(--muted);cursor:pointer;font-weight:700}
+    .lang button.active{background:#fff;color:#000;box-shadow:0 0 12px rgba(0,255,255,.18)}
+    .icon-btn{display:grid;place-items:center;width:42px;height:42px;border-radius:10px;background:var(--panel);border:1px solid #232323;cursor:pointer}
+    .badge{position:absolute;top:-6px;right:-6px;background:var(--brand);color:#000;font-size:11px;font-weight:800;padding:2px 6px;border-radius:999px;border:2px solid var(--panel)}
+
+    main{padding:36px 0}
+    .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+    .top-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+    h1{margin:0;font-size:22px}
+    .lead{color:var(--muted);font-size:13px;margin-top:6px}
+
+    .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .select, .input {background:var(--panel);border:1px solid rgba(255,255,255,0.03);border-radius:10px;padding:8px 10px;color:var(--text)}
+    .select select, .input input{background:transparent;border:none;color:var(--text);outline:none;font-size:14px}
+
+    /* Two-column layout, cards made wider */
+    .grid{display:grid;grid-template-columns:repeat(2, minmax(520px, 1fr));gap:22px}
+    @media (max-width:1150px){ .grid{grid-template-columns:1fr} }
+
+    /* Card layout: fixed min-height, column flex, footer pinned to bottom for consistent button placement */
+    .card{
+      display:flex;
+      flex-direction:column;
+      min-height:520px; /* ensures consistent height across cards */
+      border-radius:var(--radius);
+      overflow:hidden;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      border:1px solid rgba(255,255,255,0.03);
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.003));
+      box-shadow:var(--shadow);
+      position:relative;
+    }
+    .card:hover{
+      transform:translateY(-8px);
+      box-shadow:0 30px 90px rgba(0,0,0,0.8), 0 0 28px var(--neon-weak);
+      border-color: var(--neon-strong);
+    }
+
+    .card-media{
+      width:100%;
+      height:300px;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(180deg,#0a0a0a,#0e0e0e);
+      position:relative;
+      overflow:hidden;
+    }
+    .card-media img{width:100%;height:100%;object-fit:cover;display:block}
+    .badge-cat{position:absolute;left:14px;top:14px;background:rgba(0,0,0,0.45);padding:6px 10px;border-radius:999px;font-weight:800;color:#fff;font-size:12px;border:1px solid rgba(255,255,255,0.03)}
+    .ribbon{position:absolute;right:14px;top:14px;background:linear-gradient(90deg,var(--brand),var(--accent));padding:6px 10px;border-radius:8px;color:#000;font-weight:900;font-size:12px;box-shadow:0 8px 22px rgba(0,240,239,0.06)}
+
+    .media-overlay{
+      position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:12px;
+      background:linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.45));
+      opacity:0;transform:translateY(6px);transition:opacity .18s ease, transform .18s ease;
+    }
+    .card:hover .media-overlay{opacity:1;transform:translateY(0)}
+    .overlay-btn{padding:10px 12px;border-radius:10px;border:2px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.45);color:#fff;cursor:pointer;font-weight:800}
+    .overlay-btn:hover{border-color:var(--neon-strong);box-shadow:0 10px 30px rgba(0,240,239,0.08)}
+
+    .card-body{padding:16px;display:flex;flex-direction:column;gap:12px;flex:1} /* flex:1 makes body grow and pushes footer to bottom */
+    .card-title{font-weight:900;font-size:20px;margin:0}
+    .card-desc{color:var(--muted);font-size:14px;margin:0}
+    .specs{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+    .spec{padding:6px 10px;border-radius:8px;background:rgba(255,255,255,0.02);color:var(--muted);font-size:13px}
+
+    .card-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:auto} /* margin-top:auto pins footer to bottom */
+    .price{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:10px 14px;border-radius:10px;font-weight:900;background:linear-gradient(90deg,var(--brand),#bfb3ff);color:#000;
+      box-shadow: inset 0 -2px 0 rgba(255,255,255,0.06);
+    }
+    .actions{display:flex;gap:10px;align-items:center}
+    .btn{
+      padding:10px 14px;border-radius:10px;border:none;background:var(--brand);color:#000;font-weight:900;cursor:pointer;
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      display:inline-flex;align-items:center;gap:8px;
+    }
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted)}
+    .btn:hover{
+      transform:translateY(-3px);
+      box-shadow: 0 12px 34px rgba(0,240,239,0.12), 0 0 28px rgba(0,240,239,0.06) inset;
+      background: linear-gradient(90deg, rgba(0,240,239,0.95), rgba(168,85,247,0.9));
+      color:#000;
+    }
+    .btn.ghost:hover{
+      transform:translateY(-3px);
+      box-shadow: 0 12px 34px rgba(0,240,239,0.06);
+      border-color: rgba(0,240,239,0.12);
+      color:var(--text);
+    }
+
+    .icon-heart{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,0.02);cursor:pointer;border:1px solid rgba(255,255,255,0.03)}
+    .icon-heart.active{background:linear-gradient(90deg,var(--brand),var(--accent));border-color:var(--neon-strong);box-shadow:0 10px 30px rgba(0,240,239,0.08)}
+    .icon-heart svg{width:18px;height:18px;fill:none;stroke:currentColor}
+
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:200;padding:20px}
+    .modal.open{display:flex}
+    .modal-card{width:980px;max-width:100%;background:var(--panel);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 24px 60px rgba(0,0,0,.8)}
+    .modal-grid{display:grid;grid-template-columns:420px 1fr;gap:16px}
+    .modal-media{width:100%;height:420px;border-radius:10px;overflow:hidden;background:#0b0b0b}
+    .modal-media img{width:100%;height:100%;object-fit:cover}
+    .modal-specs{color:var(--muted);font-size:14px;line-height:1.5}
+
+    .sidebar .panel{padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.003));border:1px solid rgba(255,255,255,0.03)}
+
+    footer{padding:22px 0;text-align:center;color:var(--muted);font-size:13px}
+
+    @media (max-width:740px){
+      .card-media{height:220px}
+      .card{min-height:440px}
+      .grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav container" role="banner">
+      <div style="display:flex;align-items:center;gap:12px">
+        <a class="brand" href="index.html" aria-label="PADOBI PC — Home">
+          <span class="brand__logo"><img src="photo_2025-09-02_11-12-54.jpg" alt="Padobi logo" /></span>
+          <span class="brand__text">PADOBI PC</span>
+        </a>
+      </div>
+
+      <div class="actions" role="navigation" aria-label="Header actions">
+        <div class="lang" aria-label="Language switch">
+          <button type="button" data-lang="ru">RU</button>
+          <button type="button" data-lang="ua">UA</button>
+          <button type="button" data-lang="en">EN</button>
+        </div>
+
+        <button id="headerProfileBtn" class="icon-btn" title="Профиль" aria-label="Профиль">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="7" r="4"/><path d="M6 21a6 6 0 0 1 12 0"/></svg>
+        </button>
+
+        <button id="goCart" class="icon-btn" title="Корзина" aria-label="Корзина">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6l-2-3"/><circle cx="9" cy="21" r="1.5"/><circle cx="18" cy="21" r="1.5"/></svg>
+          <span id="cartCount" class="badge">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="top-row">
+        <div>
+          <h1 id="pageTitle">Готовые сборки</h1>
+          <div class="lead" id="pageLead">Подберите сборку по бюджету и задачам — всё протестировано и готово к использованию.</div>
+        </div>
+
+        <div class="controls">
+          <div class="select">
+            <select id="filterCategory" aria-label="Фильтр по категории">
+              <option value="all">Все</option>
+              <option value="office">Офис</option>
+              <option value="gaming">Игровые</option>
+              <option value="creator">Рабочие</option>
+            </select>
+          </div>
+
+          <div class="select">
+            <select id="sortBy" aria-label="Сортировка">
+              <option value="recommended">Рекомендуемые</option>
+              <option value="price_asc">Цена: по возрастанию</option>
+              <option value="price_desc">Цена: по убыванию</option>
+            </select>
+          </div>
+
+          <div class="input">
+            <input id="searchInput" placeholder="Поиск по названию..." aria-label="Поиск"/>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:18px">
+        <section>
+          <div class="grid" id="buildsGrid" aria-live="polite"></div>
+        </section>
+
+        <aside class="sidebar">
+          <div class="panel" style="display:flex;align-items:center;justify-content:center;padding:18px;border-radius:12px">
+            <button class="btn" onclick="location.href='configurator.html'">Открыть конфигуратор</button>
+          </div>
+
+          <div class="panel support">
+            <h3>Поддержка</h3>
+            <div class="muted">Нужна консультация по сборке? Поможем выбрать модель под задачу.</div>
+            <div style="margin-top:8px;font-weight:900;color:var(--brand)">+38 (068) 000‑00‑00</div>
+            <a href="mailto:info@padobipc.com" style="color:var(--brand);font-weight:700">info@padobipc.com</a>
+          </div>
+
+          <div class="panel">
+            <h3>Избранное</h3>
+            <div id="favoritesList" style="min-height:60px;color:var(--muted)">Пока пусто</div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div style="padding:18px 0;text-align:center;color:var(--muted);font-size:13px;">© <span id="year"></span> PADOBI PC</div>
+    </div>
+  </footer>
+
+  <!-- Modal -->
+  <div id="modal" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-card" role="document" aria-modal="true">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-weight:900" id="modalTitle">—</div>
+        <button id="modalClose" class="btn ghost">✕</button>
+      </div>
+      <div class="modal-grid">
+        <div class="modal-media"><img id="modalImg" src="" alt=""></div>
+        <div>
+          <div id="modalSpecs" class="modal-specs"></div>
+          <div style="margin-top:12px;font-weight:900;font-size:18px" id="modalPrice">—</div>
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button id="modalAddToCart" class="btn">Добавить в корзину</button>
+            <button id="modalFav" class="btn ghost">В избранное</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const builds = [
+      { id:'b-starter-001', title:'PADOBI Start (Офис)', category:'office', price:20100, img:'imgs/build_start.jpg', specs:['Intel i5-13400','Integrated GPU','16GB DDR4','500GB NVMe','650W PSU'], notes:'Бюджетная и надёжная сборка для офиса и мультимедиа.', recommended:true },
+      { id:'b-gamer-001', title:'PADOBI Gamer — Сбалансированная', category:'gaming', price:55900, img:'imgs/build_gamer.jpg', specs:['Intel i7-14700','RTX 4070 Ti','32GB DDR5','1TB NVMe','850W Gold'], notes:'Отличная производительность в 1440p с запасом.', recommended:true },
+      { id:'b-pro-001', title:'PADOBI Pro — Рабочая станция', category:'creator', price:92000, img:'imgs/build_pro.jpg', specs:['Ryzen 9 7950X','RTX 4090','64GB DDR5','2TB NVMe','1200W Platinum'], notes:'Максимальная производительность для 3D и рендеринга.', recommended:false },
+      { id:'b-gamer-lite', title:'PADOBI Gamer Lite', category:'gaming', price:37900, img:'imgs/build_gamer_lite.jpg', specs:['Ryzen 5 7600','RX 7800 XT','16GB DDR5','1TB NVMe','750W PSU'], notes:'Отличный выбор для 1080/1440p при ограниченном бюджете.', recommended:false },
+      { id:'b-mini-001', title:'PADOBI Compact', category:'office', price:15900, img:'imgs/build_mini.jpg', specs:['Intel i3-13100','Integrated GPU','8GB DDR4','500GB NVMe','450W PSU'], notes:'Компактная и доступная сборка для повседневных задач.', recommended:false },
+    ];
+
+    const grid = document.getElementById('buildsGrid');
+
+    function renderBuilds(list){
+      grid.innerHTML = '';
+      if(!list.length){ grid.innerHTML = '<div style="color:var(--muted)">Ничего не найдено</div>'; return; }
+      list.forEach(b=>{
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-media">
+            ${b.recommended ? '<div class="ribbon">Рекомендовано</div>' : ''}
+            <div class="badge-cat">${b.category === 'gaming' ? 'Игровая' : b.category === 'office' ? 'Офис' : 'Рабочая'}</div>
+            <img src="${b.img}" alt="${b.title}" loading="lazy"/>
+            <div class="media-overlay">
+              <button class="overlay-btn quick-view" data-id="${b.id}">Быстрый просмотр</button>
+              <div class="icon-heart" data-id="${b.id}" title="В избранное" aria-hidden="false">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="1.6"><path d="M20.8 8.6a5.6 5.6 0 0 0-8-0.1L12 9.3l-0.8-0.8a5.6 5.6 0 0 0-8 8l8.8 8.9L20.8 16.6a5.6 5.6 0 0 0 0-8z"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div>
+              <div class="card-title">${b.title}</div>
+              <div class="card-desc">${b.notes}</div>
+              <div class="specs">${b.specs.map(s => `<div class="spec">${s}</div>`).join('')}</div>
+            </div>
+            <div class="card-foot">
+              <div class="price">${b.price.toLocaleString('ru-RU')} ₴</div>
+              <div class="actions">
+                <button class="btn btn-details" data-id="${b.id}">Подробнее</button>
+                <button class="btn btn-add" data-id="${b.id}">В корзину</button>
+              </div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+      bindCardControls();
+    }
+
+    function bindCardControls(){
+      document.querySelectorAll('.quick-view').forEach(btn=> btn.addEventListener('click', ()=> openDetails(btn.dataset.id)));
+      document.querySelectorAll('.icon-heart').forEach(el=>{
+        const id = el.getAttribute('data-id');
+        const fav = JSON.parse(localStorage.getItem('padobi_fav') || '[]');
+        if(fav.find(x=>x.id===id)) el.classList.add('active');
+        el.addEventListener('click', (ev)=>{ ev.stopPropagation(); toggleFavorite(id, el); });
+      });
+    }
+
+    renderBuilds(builds);
+
+    // Filters & search
+    const filterEl = document.getElementById('filterCategory');
+    const sortEl = document.getElementById('sortBy');
+    const searchEl = document.getElementById('searchInput');
+
+    function applyFilters(){
+      const cat = filterEl.value;
+      const sort = sortEl.value;
+      const q = (searchEl.value || '').trim().toLowerCase();
+      let res = builds.slice();
+      if(cat !== 'all') res = res.filter(b => b.category === cat);
+      if(q) res = res.filter(b => (b.title + ' ' + b.notes + ' ' + b.specs.join(' ')).toLowerCase().includes(q));
+      if(sort === 'price_asc') res.sort((a,b)=> a.price - b.price);
+      if(sort === 'price_desc') res.sort((a,b)=> b.price - a.price);
+      if(sort === 'recommended') res.sort((a,b)=> (b.recommended?1:0) - (a.recommended?1:0));
+      renderBuilds(res);
+    }
+    filterEl.addEventListener('change', applyFilters);
+    sortEl.addEventListener('change', applyFilters);
+    searchEl.addEventListener('input', ()=> setTimeout(applyFilters, 120));
+
+    // modal and cart
+    const modal = document.getElementById('modal');
+    const modalImg = document.getElementById('modalImg');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalSpecs = document.getElementById('modalSpecs');
+    const modalPrice = document.getElementById('modalPrice');
+    let modalCurrent = null;
+
+    document.addEventListener('click', (e)=>{
+      const d = e.target.closest('.btn-details');
+      if(d){ openDetails(d.dataset.id); return; }
+      const a = e.target.closest('.btn-add');
+      if(a){ addToCartById(a.dataset.id); return; }
+    });
+
+    function openDetails(id){
+      const b = builds.find(x=>x.id===id); if(!b) return;
+      modalCurrent = b;
+      modalTitle.textContent = b.title;
+      modalImg.src = b.img;
+      modalSpecs.innerHTML = '<div style="color:var(--muted)">'+ b.specs.join('<br>') +'</div><div style="margin-top:10px;color:var(--muted)">'+ b.notes +'</div>';
+      modalPrice.textContent = b.price.toLocaleString('ru-RU') + ' ₴';
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+    }
+    document.getElementById('modalClose').addEventListener('click', ()=> { modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); });
+
+    function addToCartById(id){
+      const b = builds.find(x=>x.id===id); if(!b) return;
+      const cart = JSON.parse(localStorage.getItem('padobi_cart') || '[]');
+      cart.push({ id:'prebuilt-'+b.id+'-'+Date.now(), title:b.title, desc:b.specs.join(' • '), price:b.price, qty:1});
+      localStorage.setItem('padobi_cart', JSON.stringify(cart));
+      updateCartBadge();
+      alert('Добавлено в корзину: ' + b.title);
+    }
+    document.getElementById('modalAddToCart').addEventListener('click', ()=> { if(modalCurrent) addToCartById(modalCurrent.id); modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); });
+
+    // favorites
+    function toggleFavorite(id, el){
+      let fav = JSON.parse(localStorage.getItem('padobi_fav') || '[]');
+      const exists = fav.find(x=>x.id===id);
+      if(exists){ fav = fav.filter(x=>x.id!==id); el.classList.remove('active'); }
+      else { const b = builds.find(x=>x.id===id); fav.push({id:id,title:b.title,price:b.price}); el.classList.add('active'); }
+      localStorage.setItem('padobi_fav', JSON.stringify(fav));
+      renderFavorites();
+    }
+    function renderFavorites(){
+      const listEl = document.getElementById('favoritesList');
+      const fav = JSON.parse(localStorage.getItem('padobi_fav') || '[]');
+      if(!fav.length){ listEl.innerHTML = '<div style="color:var(--muted)">Пока пусто</div>'; return; }
+      listEl.innerHTML = '';
+      fav.forEach(item=>{
+        const r = document.createElement('div');
+        r.style.display='flex'; r.style.justifyContent='space-between'; r.style.alignItems='center'; r.style.marginBottom='8px';
+        r.innerHTML = `<div style="font-weight:800">${item.title}</div><div style="display:flex;gap:8px"><button class="btn fav-open" data-id="${item.id}">Открыть</button><button class="btn ghost fav-remove" data-id="${item.id}">Удалить</button></div>`;
+        listEl.appendChild(r);
+      });
+    }
+    document.getElementById('favoritesList').addEventListener('click', (e)=>{
+      const id = e.target.getAttribute('data-id'); if(!id) return;
+      if(e.target.classList.contains('fav-open')) openDetails(id);
+      if(e.target.classList.contains('fav-remove')) { let fav = JSON.parse(localStorage.getItem('padobi_fav') || '[]'); fav = fav.filter(x=>x.id!==id); localStorage.setItem('padobi_fav', JSON.stringify(fav)); renderFavorites(); }
+    });
+    document.getElementById('modalFav').addEventListener('click', ()=> {
+      if(!modalCurrent) return;
+      const fav = JSON.parse(localStorage.getItem('padobi_fav') || '[]');
+      if(!fav.find(x=>x.id===modalCurrent.id)){ fav.push({id:modalCurrent.id,title:modalCurrent.title,price:modalCurrent.price}); localStorage.setItem('padobi_fav', JSON.stringify(fav)); renderFavorites(); alert('Добавлено в избранное'); } else alert('Уже в избранном');
+    });
+
+    function updateCartBadge(){ const cart = JSON.parse(localStorage.getItem('padobi_cart') || '[]'); const badge = document.getElementById('cartCount'); if(badge) badge.textContent = cart.length; }
+    updateCartBadge();
+    renderFavorites();
+
+    // header nav
+    document.getElementById('goCart').addEventListener('click', ()=> location.href='cart.html');
+    document.getElementById('headerProfileBtn').addEventListener('click', ()=> location.href='profile.html');
+
+    // language toggles (simple)
+    document.querySelectorAll('.lang button').forEach(btn=>{
+      const code = btn.getAttribute('data-lang') || btn.textContent.toLowerCase();
+      btn.addEventListener('click', ()=>{
+        document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('active', b.getAttribute('data-lang')===code));
+        if(code==='ua'){ document.getElementById('pageTitle').textContent='Готові збірки'; document.getElementById('pageLead').textContent='Підберіть збірку за бюджетом і задачами.'; }
+        else if(code==='en'){ document.getElementById('pageTitle').textContent='Prebuilt PCs'; document.getElementById('pageLead').textContent='Choose a prebuilt PC by budget and purpose.'; }
+        else { document.getElementById('pageTitle').textContent='Готовые сборки'; document.getElementById('pageLead').textContent='Подберите сборку по бюджету и задачам — всё протестировано и готово к использованию.'; }
+      });
+    });
+
+    // close modal on Esc
+    document.addEventListener('keydown', (e)=> { if(e.key === 'Escape' && modal.classList.contains('open')){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); } });
+  </script>
+</body>
+</html>

@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Апгрейд / Trade‑in — PADOBI PC</title>
+  <meta name="description" content="Trade‑in: сдайте старые комплектующие и получите зачёт при покупке нового. PADOBI PC — выгодный апгрейд." />
+  <link rel="icon" href="photo_2025-09-02_11-12-54.jpg">
+
+  <style>
+    :root{
+      --bg:#000;
+      --panel:#0b0b0b;
+      --muted:#a9a9a9;
+      --text:#fff;
+      --brand:#00f0ef;
+      --accent:#a855f7;
+      --radius:12px;
+      --container:1200px;
+      --neon: rgba(0,240,239,0.14);
+      --glass: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.003));
+      --card-min-height: 520px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+    }
+
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
+    .container{max-width:var(--container);margin:0 auto;padding:0 20px}
+
+    /* header */
+    header{
+      position:sticky;top:0;z-index:120;background:var(--bg);
+      border-bottom:1px solid rgba(255,255,255,0.03);
+      box-shadow:0 0 20px rgba(0,255,255,.04);
+      backdrop-filter: blur(4px);
+    }
+    .nav{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand__logo{width:42px;height:42px;border-radius:10px;overflow:hidden}
+    .brand__text{font-weight:900;letter-spacing:.6px;text-transform:uppercase}
+    .actions{display:flex;align-items:center;gap:12px}
+    .lang button{height:34px;padding:0 10px;border-radius:8px;border:1px solid #232323;background:#0d0d0d;color:var(--muted);cursor:pointer;font-weight:700}
+    .icon-btn{display:grid;place-items:center;width:42px;height:42px;border-radius:10px;background:var(--panel);border:1px solid #232323;cursor:pointer}
+    .badge{position:absolute;top:-6px;right:-6px;background:var(--brand);color:#000;font-size:11px;font-weight:800;padding:2px 6px;border-radius:999px}
+
+    main{padding:36px 0}
+    .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+    .page-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+    h1{margin:0;font-size:22px}
+    .lead{color:var(--muted);font-size:13px;margin-top:6px;max-width:760px}
+
+    .layout{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    @media (max-width:980px){ .layout{grid-template-columns:1fr} }
+
+    .panel{background:var(--panel);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 16px 48px rgba(0,0,0,0.6)}
+
+    /* left column */
+    .steps{display:flex;gap:8px;margin-bottom:12px}
+    .step-pill{padding:8px 12px;border-radius:999px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.02);font-weight:800;color:var(--muted);font-size:13px}
+    .step-pill.active{background:linear-gradient(90deg,var(--brand),var(--accent));color:#000;box-shadow:0 8px 30px rgba(0,240,239,0.06)}
+
+    .trade-form{display:flex;flex-direction:column;gap:14px}
+    .group{display:flex;flex-direction:column;gap:8px}
+    label{font-weight:800;font-size:13px;color:var(--muted)}
+    input[type="text"], input[type="tel"], input[type="email"], select, textarea {width:100%;padding:10px;border-radius:8px;border:1px solid #1b1b1b;background:#0b0b0b;color:var(--text);outline:none}
+    textarea{min-height:88px;resize:vertical}
+
+    .parts-list{display:flex;flex-direction:column;gap:10px}
+    /* adjusted grid so remove button sits below estimate and doesn't overlap condition select */
+    .part-row{
+      display:grid;
+      grid-template-columns:140px 1fr 150px;
+      grid-template-rows:auto auto;
+      gap:10px;
+      align-items:center;
+      padding:10px;border-radius:10px;
+      background:var(--glass);border:1px solid rgba(255,255,255,0.02);
+      min-height:86px;
+    }
+    .part-row .type{grid-column:1 / 2;grid-row:1 / span 2;font-weight:900}
+    .part-row .model{grid-column:2 / 3;grid-row:1 / 2}
+    .part-row .cond{grid-column:3 / 4;grid-row:1 / 2}
+    .part-row .est-meta{grid-column:2 / 4;grid-row:2 / 3;display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .part-row .est-text{color:var(--muted);font-weight:900}
+    /* smaller delete button and placed in est-meta to avoid overlap */
+    .remove-part{padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted);cursor:pointer;font-weight:800}
+    .remove-part:hover{border-color:var(--neon);color:#fff;box-shadow:0 8px 30px rgba(0,240,239,0.06)}
+
+    .add-part{display:flex;gap:8px;align-items:center}
+    .small{font-size:13px;color:var(--muted)}
+
+    .uploader{display:flex;gap:8px;flex-wrap:wrap}
+    .file-slot{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:120px;height:84px;border-radius:8px;border:1px dashed rgba(255,255,255,0.04);background:#0b0b0b;color:var(--muted);font-size:13px}
+
+    /* estimate & results */
+    .estimate{display:flex;flex-direction:column;gap:10px}
+    .estimate .row{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.005), transparent)}
+    .estimate .row .label{color:var(--muted)}
+    .estimate .row .value{font-weight:900}
+    .credit{font-size:18px;font-weight:900;color:var(--brand)}
+    .cta{display:flex;gap:10px;align-items:center;margin-top:10px}
+    .btn{padding:12px 14px;border-radius:10px;border:none;background:var(--brand);color:#000;font-weight:900;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted)}
+    .btn:hover{box-shadow:0 10px 40px rgba(0,240,239,0.12);transform:translateY(-3px)}
+
+    /* right column */
+    .summary .title{font-weight:900}
+    .summary .card{padding:12px}
+    .option-row{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px}
+
+    /* prettier credit usage cards (replacing bullets) */
+    .credit-usage{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .credit-card{
+      flex:1 1 calc(33% - 8px);
+      min-width:120px;
+      padding:12px;border-radius:10px;background:#0b0b0b;border:1px solid rgba(255,255,255,0.03);text-align:center;cursor:pointer;
+      transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+    }
+    .credit-card h4{margin:0;font-size:14px;font-weight:900}
+    .credit-card p{margin:6px 0 0;color:var(--muted);font-size:13px}
+    .credit-card.active{border-color:var(--neon);box-shadow:0 12px 34px rgba(0,240,239,0.06);transform:translateY(-6px);background:linear-gradient(180deg, rgba(0,240,239,0.02), transparent)}
+    @media (max-width:640px){ .credit-card{flex:1 1 100%} }
+
+    /* small screens */
+    @media (max-width:540px){
+      .part-row{grid-template-columns:1fr 1fr;grid-template-rows:auto auto 32px}
+      .part-row .type{grid-column:1/2;grid-row:1/2}
+      .part-row .model{grid-column:1/3;grid-row:2/3}
+      .part-row .cond{grid-column:1/2;grid-row:3/4}
+      .part-row .est-meta{grid-column:2/3;grid-row:3/4}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav container" role="banner">
+      <a class="brand" href="index.html" aria-label="PADOBI PC — Home">
+        <span class="brand__logo"><img src="photo_2025-09-02_11-12-54.jpg" alt="logo" style="width:100%;height:100%;object-fit:cover"></span>
+        <span class="brand__text">PADOBI PC</span>
+      </a>
+
+      <div class="actions" role="navigation" aria-label="Header actions">
+        <div class="lang" aria-label="Language">
+          <button data-lang="ru" class="active">RU</button>
+          <button data-lang="ua">UA</button>
+          <button data-lang="en">EN</button>
+        </div>
+
+        <button id="headerProfileBtn" class="icon-btn" title="Профиль" aria-label="Профиль">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="7" r="4"/><path d="M6 21a6 6 0 0 1 12 0"/></svg>
+        </button>
+
+        <button id="goCart" class="icon-btn" title="Корзина" aria-label="Корзина">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6l-2-3"/><circle cx="9" cy="21" r="1.5"/><circle cx="18" cy="21" r="1.5"/></svg>
+          <span id="cartCount" class="badge">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="page-top">
+        <div>
+          <h1>Апгрейд и Trade‑in</h1>
+          <div class="lead">Сдавайте свои старые комплектующие — получите зачёт при покупке нового. Предварительная оценка доступна онлайн; окончательная — в мастерской после тестирования.</div>
+        </div>
+      </div>
+
+      <div class="layout">
+        <!-- LEFT -->
+        <section class="panel">
+          <div class="steps" aria-hidden="false">
+            <div class="step-pill active">1. Что вы сдаёте</div>
+            <div class="step-pill">2. Что хотите взять</div>
+            <div class="step-pill">3. Оформление</div>
+          </div>
+
+          <form id="tradeForm" class="trade-form" autocomplete="off" novalidate>
+            <div class="group">
+              <label for="customerName">ФИО / Название</label>
+              <input id="customerName" type="text" placeholder="Иван Иванов" />
+            </div>
+
+            <div class="group">
+              <label for="phone">Телефон</label>
+              <input id="phone" type="tel" placeholder="+38 (0__) ___-__-__" />
+            </div>
+
+            <div class="group">
+              <label>Список комплектующих (сдаёте)</label>
+              <div class="parts-list" id="partsList" aria-live="polite"></div>
+
+              <div class="add-part">
+                <select id="newPartType" aria-label="Тип компонента">
+                  <option value="cpu">CPU</option>
+                  <option value="gpu">GPU</option>
+                  <option value="ram">RAM</option>
+                  <option value="storage">SSD/HDD</option>
+                  <option value="psu">PSU</option>
+                  <option value="mb">Motherboard</option>
+                  <option value="case">Корпус</option>
+                </select>
+                <button type="button" id="addPartBtn" class="btn">Добавить</button>
+                <div class="small">Укажите модель и состояние — мы оценим.</div>
+              </div>
+            </div>
+
+            <div class="group">
+              <label>Фото компонентов (опционально)</label>
+              <div class="uploader" id="uploader">
+                <label class="file-slot"><input type="file" accept="image/*" style="display:none" class="file-input" /><div class="muted">Загрузить фото</div></label>
+                <label class="file-slot"><input type="file" accept="image/*" style="display:none" class="file-input" /><div class="muted">Загрузить фото</div></label>
+                <label class="file-slot"><input type="file" accept="image/*" style="display:none" class="file-input" /><div class="muted">Загрузить фото</div></label>
+              </div>
+            </div>
+
+            <div class="group">
+              <label>Целевой апгрейд</label>
+              <select id="targetChoice">
+                <option value="store">Я хочу скидку на покупку</option>
+                <option value="cash">Я хочу деньги за комплектующие</option>
+                <option value="swap">Обменять на другой компонент</option>
+              </select>
+              <input id="targetDetails" type="text" placeholder="Например: RTX 4070 или 'снижение цены на сборку'" />
+            </div>
+
+            <div class="group">
+              <label for="note">Доп. заметки</label>
+              <textarea id="note" placeholder="Особенности, серийники, почему продаёте..."></textarea>
+            </div>
+
+            <div class="group">
+              <label>Условия и подтверждение</label>
+              <div style="display:flex;gap:12px;align-items:center">
+                <input id="agree" type="checkbox" />
+                <label for="agree" class="small">Я ознакомился с условиями trade‑in и согласен на оценку состояния</label>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;align-items:center;margin-top:6px">
+              <button type="button" id="estimateBtn" class="btn">Оценить сейчас</button>
+              <button type="button" id="saveQuote" class="btn ghost">Сохранить запрос</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- RIGHT -->
+        <aside>
+          <div class="summary panel" aria-live="polite">
+            <div class="title">Сводка оценки</div>
+
+            <div class="estimate" style="margin-top:8px">
+              <div class="row"><div class="label">Оценка компонентов</div><div class="value" id="estTotal">— ₴</div></div>
+              <div class="row"><div class="label">Применимый кредит (Trade‑in)</div><div class="value credit" id="tradeCredit">— ₴</div></div>
+              <div class="row"><div class="label">Цена желаемого компонента</div><div class="value" id="targetPrice">— ₴</div></div>
+              <div class="row"><div class="label">К доплате / к возврату</div><div class="value" id="diff">— ₴</div></div>
+            </div>
+
+            <div style="margin-top:12px">
+              <label class="small">Как используется кредит</label>
+              <!-- prettier interactive cards instead of bullets -->
+              <div class="credit-usage" id="creditUsage">
+                <div class="credit-card" data-use="discount"><h4>Скидка сейчас</h4><p>Моментальная скидка при покупке</p></div>
+                <div class="credit-card" data-use="deposit"><h4>На счёт</h4><p>Зачисление на ваш счёт для будущих покупок</p></div>
+                <div class="credit-card" data-use="cash"><h4>Наличными</h4><p>Выдача наличных в мастерской</p></div>
+              </div>
+            </div>
+
+            <div style="margin-top:12px">
+              <label class="small">Записаться для сдачи</label>
+              <input id="visitDate" type="date" />
+              <input id="visitTime" type="time" />
+            </div>
+
+            <div class="cta">
+              <button id="proceedBtn" class="btn">Продолжить оформление</button>
+              <button id="printQuote" class="btn ghost">Печать</button>
+            </div>
+
+            <div style="margin-top:12px;color:var(--muted);font-size:13px">
+              Сервис trade‑in даёт предварительную оценку. Окончательная сумма зависит от физического состояния и результатов теста в мастерской.
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:12px">
+            <div class="title">Полезно</div>
+            <ul style="margin-top:8px;color:var(--muted);padding-left:18px">
+              <li>Мы тестируем компоненты и даём отчёт о состоянии.</li>
+              <li>Кредит действует 90 дней.</li>
+              <li>Вы можете забрать деньги или использовать их как скидку.</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container" style="padding:18px 0;text-align:center;color:var(--muted);font-size:13px;">
+      © <span id="year"></span> PADOBI PC
+    </div>
+  </footer>
+
+  <script>
+    // Page JS: UI behavior, stubs and local state (frontend-only)
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // reference market/prices (simple stubs)
+    const market = {
+      "RTX 4070 Ti": 25000,
+      "RTX 4090": 42000,
+      "RX 7800 XT": 16000,
+      "Intel i7-14700": 14500,
+      "Intel i5-14600": 8500,
+      "32GB DDR5": 4200,
+      "1TB NVMe": 4200
+    };
+
+    // base valuations and multipliers (stubs)
+    const baseValue = { cpu:3000, gpu:6000, ram:600, storage:800, psu:500, mb:1000, case:400 };
+    const conditionMultiplier = { mint:1.0, good:0.7, used:0.45, broken:0.1 };
+
+    const partsList = document.getElementById('partsList');
+    const addPartBtn = document.getElementById('addPartBtn');
+    const newPartType = document.getElementById('newPartType');
+
+    // Create an initial blank row
+    function createBlankRow(){
+      const id = 'p-' + Date.now() + '-' + Math.random().toString(36).slice(2,8);
+      const row = document.createElement('div');
+      row.className = 'part-row';
+      row.dataset.id = id;
+      row.innerHTML = `
+        <div class="type">
+          <select class="part-type">
+            <option value="cpu">CPU</option>
+            <option value="gpu">GPU</option>
+            <option value="ram">RAM</option>
+            <option value="storage">SSD/HDD</option>
+            <option value="psu">PSU</option>
+            <option value="mb">Motherboard</option>
+            <option value="case">Корпус</option>
+          </select>
+        </div>
+        <div class="model">
+          <input class="part-model" type="text" placeholder="Модель (пример: RTX 1070 / i7-4790)" />
+        </div>
+        <div class="cond">
+          <select class="part-cond">
+            <option value="mint">Как новая</option>
+            <option value="good" selected>Хорошее</option>
+            <option value="used">Рабочее / под нагрузкой</option>
+            <option value="broken">Не работает</option>
+          </select>
+        </div>
+        <div class="est-meta">
+          <div class="est-text">—</div>
+          <button class="remove-part" title="Удалить компонент">Удалить</button>
+        </div>
+      `;
+      // events
+      row.querySelector('.part-cond').addEventListener('change', updateEstimates);
+      row.querySelector('.part-type').addEventListener('change', updateEstimates);
+      row.querySelector('.part-model').addEventListener('input', updateEstimates);
+      row.querySelector('.remove-part').addEventListener('click', ()=>{ row.remove(); updateEstimates(); });
+      return row;
+    }
+
+    // start with one blank row
+    partsList.appendChild(createBlankRow());
+
+    addPartBtn.addEventListener('click', ()=>{
+      const type = newPartType.value || 'gpu';
+      const r = createBlankRow();
+      r.querySelector('.part-type').value = type;
+      partsList.appendChild(r);
+      r.querySelector('.part-model').focus();
+    });
+
+    // estimation functions
+    function estimateComponentValue(type, modelText, condKey){
+      modelText = modelText || '';
+      let base = baseValue[type] || 300;
+      const m = modelText.toLowerCase();
+
+      // heuristics for GPUs and CPUs
+      if(type === 'gpu'){
+        if(/4090/.test(m)) base = 30000;
+        else if(/4070/.test(m)) base = 22000;
+        else if(/7800/.test(m)) base = 16000;
+        else if(/1070/.test(m)) base = 4000;
+      }
+      if(type === 'cpu'){
+        if(/i9|ryzen 9/i.test(m)) base = 22000;
+        else if(/i7|ryzen 7/i.test(m)) base = 12000;
+        else if(/i5|ryzen 5/i.test(m)) base = 6000;
+      }
+      if(type === 'ram'){
+        if(/32gb/i.test(m)) base = 4200;
+        else if(/16gb/i.test(m)) base = 2200;
+      }
+      if(type === 'storage'){
+        if(/2tb/i.test(m)) base = 7600;
+        else if(/1tb/i.test(m)) base = 4200;
+        else if(/500gb/i.test(m)) base = 2400;
+      }
+      if(type === 'psu'){
+        if(/1200/i.test(m)) base = 5200;
+        else if(/850/i.test(m)) base = 3600;
+        else if(/650/i.test(m)) base = 2600;
+      }
+
+      const mult = conditionMultiplier[condKey] || 0.5;
+      let est = Math.round(base * mult);
+
+      // adjust down if model contains "old" or "broken" words
+      if(/old|пыль|гряз|неисправ|сломан/i.test(modelText)) est = Math.round(est * 0.6);
+      return est;
+    }
+
+    // update estimates for all rows
+    function updateEstimates(){
+      const rows = Array.from(partsList.querySelectorAll('.part-row'));
+      let total = 0;
+      rows.forEach(r => {
+        const type = r.querySelector('.part-type').value;
+        const model = r.querySelector('.part-model').value || '';
+        const cond = r.querySelector('.part-cond').value;
+        const est = estimateComponentValue(type, model, cond);
+        total += est;
+        r.querySelector('.est-text').textContent = est ? est.toLocaleString('ru-RU') + ' ₴' : '—';
+      });
+      const estTotalEl = document.getElementById('estTotal');
+      const tradeCreditEl = document.getElementById('tradeCredit');
+      const targetPriceEl = document.getElementById('targetPrice');
+      const diffEl = document.getElementById('diff');
+
+      estTotalEl.textContent = total ? total.toLocaleString('ru-RU') + ' ₴' : '—';
+      const credit = Math.round(total * 0.70);
+      tradeCreditEl.textContent = credit ? credit.toLocaleString('ru-RU') + ' ₴' : '—';
+
+      const targetText = document.getElementById('targetDetails').value.trim();
+      let targetPrice = 0;
+      if(targetText){
+        for(const key in market){
+          if(targetText.toLowerCase().includes(key.toLowerCase())){
+            targetPrice = market[key];
+            break;
+          }
+        }
+      }
+      targetPriceEl.textContent = targetPrice ? targetPrice.toLocaleString('ru-RU') + ' ₴' : '—';
+
+      if(targetPrice){
+        const diff = targetPrice - credit;
+        diffEl.textContent = (diff >= 0 ? '+' : '') + diff.toLocaleString('ru-RU') + ' ₴';
+      } else {
+        diffEl.textContent = '—';
+      }
+    }
+
+    // wire estimate & save
+    document.getElementById('estimateBtn').addEventListener('click', ()=>{
+      updateEstimates();
+      document.getElementById('estimateBtn').classList.add('active'); // simple visual feedback
+    });
+
+    document.getElementById('saveQuote').addEventListener('click', ()=>{
+      const customer = document.getElementById('customerName').value || 'Гость';
+      const phone = document.getElementById('phone').value || '';
+      const parts = Array.from(partsList.querySelectorAll('.part-row')).map(r => ({
+        type: r.querySelector('.part-type').value,
+        model: r.querySelector('.part-model').value,
+        cond: r.querySelector('.part-cond').value,
+        est: r.querySelector('.est-text').textContent
+      }));
+      const quote = { id:'Q-'+Date.now(), customer, phone, parts, note: document.getElementById('note').value, ts: Date.now() };
+      const saved = JSON.parse(localStorage.getItem('padobi_trade_quotes') || '[]');
+      saved.unshift(quote);
+      localStorage.setItem('padobi_trade_quotes', JSON.stringify(saved.slice(0,20)));
+      alert('Запрос сохранён локально.');
+    });
+
+    // proceed: place credit into cart as negative item (frontend stub)
+    document.getElementById('proceedBtn').addEventListener('click', ()=>{
+      if(!document.getElementById('agree').checked){ alert('Пожалуйста, подтвердите условия trade‑in.'); return; }
+      updateEstimates();
+      const creditText = document.getElementById('tradeCredit').textContent.replace(/[^0-9\-]/g,'') || '0';
+      const credit = parseInt(creditText) || 0;
+      if(!credit){ alert('Кредит не рассчитан. Нажмите "Оценить сейчас".'); return; }
+      const cart = JSON.parse(localStorage.getItem('padobi_cart') || '[]');
+      cart.push({ id:'trade-'+Date.now(), title:'Зачёт Trade‑in', desc:'Кредит по сдаче комплектующих', price:-credit, qty:1 });
+      localStorage.setItem('padobi_cart', JSON.stringify(cart));
+      alert('Кредит добавлен в корзину. Перейдите в корзину для оформления.');
+      window.location.href = 'cart.html';
+    });
+
+    // file upload small preview
+    document.querySelectorAll('.file-slot .file-input').forEach((input)=>{
+      input.addEventListener('change', (e)=>{
+        const file = e.target.files[0];
+        if(!file) return;
+        const fr = new FileReader();
+        fr.onload = ()=> {
+          const slot = input.parentElement;
+          slot.innerHTML = `<img src="${fr.result}" alt="Фото" style="width:100%;height:100%;object-fit:cover;border-radius:6px" />`;
+        };
+        fr.readAsDataURL(file);
+      });
+      input.parentElement.addEventListener('click', ()=> input.click());
+    });
+
+    // credit usage cards behavior
+    document.querySelectorAll('.credit-card').forEach(card=>{
+      card.addEventListener('click', ()=>{
+        document.querySelectorAll('.credit-card').forEach(c=>c.classList.remove('active'));
+        card.classList.add('active');
+        // store choice (frontend only)
+        document.querySelectorAll('input[name="useCredit"]').forEach(r=> r.checked = false);
+        const use = card.dataset.use;
+        if(use === 'discount') document.querySelector('input[name="useCredit"][value="discount"]').checked = true;
+        if(use === 'deposit') document.querySelector('input[name="useCredit"][value="deposit"]').checked = true;
+        if(use === 'cash') document.querySelector('input[name="useCredit"][value="cash"]').checked = true;
+      });
+    });
+
+    // cart badge helper
+    function updateCartBadge(){ const cart = JSON.parse(localStorage.getItem('padobi_cart') || '[]'); const badge = document.getElementById('cartCount'); if(badge) badge.textContent = cart.length; }
+    updateCartBadge();
+
+    // header nav
+    document.getElementById('goCart').addEventListener('click', ()=> location.href = 'cart.html');
+    document.getElementById('headerProfileBtn').addEventListener('click', ()=> location.href = 'profile.html');
+
+    // init: keep one blank row if empty
+    if(!partsList.querySelector('.part-row')) partsList.appendChild(createBlankRow());
+    function createBlankRow(){ const row = createBlankRowElement(); return row; }
+    function createBlankRowElement(){
+      const el = document.createElement('div');
+      el.className = 'part-row';
+      el.dataset.id = 'p-' + Date.now();
+      el.innerHTML = `
+        <div class="type">
+          <select class="part-type"><option value="cpu">CPU</option><option value="gpu">GPU</option><option value="ram">RAM</option><option value="storage">SSD/HDD</option><option value="psu">PSU</option><option value="mb">Motherboard</option><option value="case">Корпус</option></select>
+        </div>
+        <div class="model"><input class="part-model" type="text" placeholder="Модель (пример: RTX 1070 / i7-4790)" /></div>
+        <div class="cond"><select class="part-cond"><option value="mint">Как новая</option><option value="good" selected>Хорошее</option><option value="used">Рабочее / под нагрузкой</option><option value="broken">Не работает</option></select></div>
+        <div class="est-meta"><div class="est-text">—</div><button class="remove-part" title="Удалить компонент">Удалить</button></div>
+      `;
+      el.querySelector('.part-cond').addEventListener('change', updateEstimates);
+      el.querySelector('.part-type').addEventListener('change', updateEstimates);
+      el.querySelector('.part-model').addEventListener('input', updateEstimates);
+      el.querySelector('.remove-part').addEventListener('click', ()=> { el.remove(); updateEstimates(); });
+      return el;
+    }
+
+    // createBlankRow was used to add initial row earlier
+  </script>
+</body>
+</html>
