@@ -278,6 +278,18 @@
     </div>
   </div>
 
+    <!-- Chat -->
+  <button class="chat-btn" id="chatToggle" aria-label="Открыть чат поддержки"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+
+  <div class="chat-window" id="chatWindow" role="dialog" aria-label="Чат поддержки" aria-hidden="true">
+    <div class="chat-header"><span data-i18n="chat.support">Поддержка</span><button class="chat-close" id="chatClose" aria-label="Закрыть">×</button></div>
+    <div class="chat-messages" id="chatMessages"><div class="msg bot" data-i18n="chat.greet">Здравствуйте! Чем можем помочь?</div></div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" data-i18n-placeholder="chat.input" placeholder="Введите сообщение..." aria-label="Сообщение" />
+      <button id="chatSend" aria-label="Отправить">➤</button>
+    </div>
+  </div>
+
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -456,3 +468,4 @@
 </body>
 
 </html>
+
