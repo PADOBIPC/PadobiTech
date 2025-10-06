@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Корзина — PADOBI PC</title>
+  <title data-i18n="site.title">Корзина — PADOBI PC</title>
   <meta name="description" content="Корзина — PADOBI PC. Чёткий и понятный интерфейс для оформления заказа.">
   <link rel="icon" href="photo_2025-09-02_11-12-54.jpg">
 
@@ -40,20 +40,38 @@
     img{display:block;max-width:100%}
     .container{max-width:var(--container);margin:0 auto;padding:0 20px}
 
-    /* Header same as profile.html */
+    /* Header updated to match main page */
     header{
       position:sticky;top:0;z-index:120;background:var(--bg);
-      border-bottom:1px solid var(--mono-border);
-      box-shadow:0 0 20px rgba(0,255,255,.03);
+      border-bottom:1px solid rgba(255,255,255,0.03);
+      box-shadow:0 0 20px rgba(0,255,255,.04);
       backdrop-filter: blur(4px);
     }
-    .nav{height:72px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:72px}
     .brand{display:flex;align-items:center;gap:12px;font-weight:900;letter-spacing:.6px;cursor:pointer}
     .brand__logo{width:42px;height:42px;border-radius:10px;overflow:hidden;flex-shrink:0;box-shadow:0 0 10px rgba(0,255,255,.12)}
+    .brand__logo img{width:100%;height:100%;object-fit:cover}
     .brand__text{font-size:18px;text-transform:uppercase}
     .actions{display:flex;align-items:center;gap:10px}
     .icon-btn{position:relative;display:grid;place-items:center;width:42px;height:42px;border-radius:10px;background:var(--panel);border:1px solid #232323;cursor:pointer;transition:.18s;overflow:visible}
+    .icon-btn:hover{transform:translateY(-2px);box-shadow:0 0 18px rgba(0,255,255,.08)}
     .badge{position:absolute;top:-6px;right:-6px;background:var(--brand);color:#000;font-size:11px;font-weight:800;padding:2px 6px;border-radius:999px;border:2px solid var(--panel);box-shadow:0 0 10px var(--brand)}
+    .dropdown{position:relative}
+    .dropdown-menu{display:none;position:absolute;right:0;top:48px;background:var(--panel);border:1px solid #232323;border-radius:10px;min-width:200px;overflow:hidden;box-shadow:var(--shadow);z-index:110}
+    .dropdown.open .dropdown-menu{display:block}
+    .dropdown-menu a{display:block;padding:12px 16px;color:var(--text);font-size:14px}
+
+    /* Lang - prettier buttons like main page */
+    .lang{display:flex;gap:8px;margin-left:8px}
+    .lang button{height:34px;padding:0 12px;border-radius:8px;border:1px solid #232323;background:#0d0d0d;color:#ddd;cursor:pointer;transition:.18s;font-weight:700;letter-spacing:.4px}
+    .lang button.active{background:#fff;color:#000;box-shadow:0 0 12px rgba(0,255,255,.18)}
+    .lang button:hover{background:#161616}
+    .lang button:focus{outline:2px solid rgba(0,255,255,.06);outline-offset:2px}
+
+    /* Header small avatar button */
+    .profile-btn{width:40px;height:40px;border-radius:10px;padding:0;border:none;background:transparent;display:grid;place-items:center;cursor:pointer;border:1px solid rgba(255,255,255,0.03);overflow:hidden}
+    .profile-btn img{width:100%;height:100%;object-fit:cover;display:block;border-radius:8px}
+    .profile-btn svg{width:18px;height:18px}
 
     /* Layout */
     main{padding:36px 0}
@@ -143,11 +161,27 @@
 
     button:focus, input:focus { outline:2px solid rgba(0,255,255,0.06); outline-offset:2px; }
 
+    /* Chat / support floating UI (copied from main page for pixel-perfect parity) */
+    .chat-btn{position:fixed;bottom:20px;right:20px;width:64px;height:64px;border-radius:50%;background:var(--brand);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 0 26px var(--brand),0 0 38px rgba(0,255,255,.35);transition:.25s;z-index:120}
+    .chat-btn:hover{transform:scale(1.06)}
+    .chat-btn svg{stroke:#000}
+    .chat-window{position:fixed;bottom:96px;right:20px;width:320px;background:var(--panel);border:1px solid #232323;border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,.7);display:none;flex-direction:column;overflow:hidden;z-index:115;max-height:60vh}
+    .chat-header{background:linear-gradient(90deg,var(--brand),rgba(255,255,255,0.5));color:#000;font-weight:800;padding:10px;display:flex;justify-content:space-between;align-items:center}
+    .chat-close{background:none;border:none;font-size:18px;cursor:pointer}
+    .chat-messages{flex:1;padding:10px;max-height:260px;overflow-y:auto;color:var(--text);display:flex;flex-direction:column;gap:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
+    .msg{margin:6px 0;padding:8px 12px;border-radius:10px;max-width:80%;word-break:break-word}
+    .msg.bot{background:#222;align-self:flex-start;color:var(--text)}
+    .msg.user{background:var(--brand);color:#000;align-self:flex-end;font-weight:700}
+    .chat-input{display:flex;border-top:1px solid #232323;padding:10px;gap:8px;background:linear-gradient(180deg, transparent, rgba(255,255,255,0.01))}
+    .chat-input input{flex:1;padding:10px;border:none;background:#111;color:var(--text);outline:none;border-radius:8px}
+    .chat-input button{background:var(--brand);border:none;padding:8px 12px;cursor:pointer;border-radius:8px}
+
     @media (max-width:540px){
       .cart-item-thumb{width:72px;height:60px}
       .cart-wrap{padding:14px}
       .stepper{flex-direction:column;gap:8px}
       .order-row{flex-direction:column}
+      .chat-window{right:12px;left:12px;width:auto}
     }
   </style>
 </head>
@@ -155,8 +189,8 @@
   <header>
     <div class="container nav" role="banner">
       <a class="brand" href="index.html" aria-label="PADOBI PC — Home">
-        <span class="brand__logo"><img src="logo.jpg" alt="Padobi logo" /></span>
-        <span class="brand__text">PADOBI PC</span>
+        <span class="brand__logo"><img src="photo_2025-09-02_11-12-54.jpg" alt="Padobi logo" /></span>
+        <span class="brand__text" data-i18n="site.brand">PADOBI PC</span>
       </a>
 
       <div class="actions" role="navigation" aria-label="Header actions">
@@ -175,6 +209,18 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6l-2-3"/><circle cx="9" cy="21" r="1.5"/><circle cx="18" cy="21" r="1.5"/></svg>
           <span class="badge" id="cartCount">2</span>
         </button>
+
+        <div class="dropdown" id="menuDropdown">
+          <button class="icon-btn" id="menuBtn" aria-expanded="false" aria-controls="menu" title="Меню">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+          </button>
+          <div class="dropdown-menu" id="menu" role="menu" aria-hidden="true">
+            <a href="profile.html" data-i18n="menu.profile">Профиль</a>
+            <a href="cart.html" data-i18n="menu.cart">Корзина</a>
+            <a href="#" data-i18n="menu.settings">Настройки</a>
+            <a href="status.html" data-i18n="menu.status">Статус заказа</a>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -409,6 +455,20 @@
     </div>
   </main>
 
+  <!-- Floating support button + chat window (точь-в-точь как на главной) -->
+  <button class="chat-btn" id="chatToggle" aria-label="Открыть чат поддержки">
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  </button>
+
+  <div class="chat-window" id="chatWindow" role="dialog" aria-label="Чат поддержки" aria-hidden="true">
+    <div class="chat-header"><span data-i18n="chat.support">Поддержка</span><button class="chat-close" id="chatClose" aria-label="Закрыть">×</button></div>
+    <div class="chat-messages" id="chatMessages"><div class="msg bot" data-i18n="chat.greet">Здравствуйте! Чем можем помочь?</div></div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" data-i18n-placeholder="chat.input" placeholder="Введите сообщение..." aria-label="Сообщение" />
+      <button id="chatSend" aria-label="Отправить">➤</button>
+    </div>
+  </div>
+
   <footer>
     <div class="container" style="padding:18px 0;text-align:center;color:var(--muted);font-size:13px;">
       © <span id="year"></span> PADOBI PC
@@ -430,7 +490,145 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Helpers
+    // --- I18N (extended with chat keys) ---
+    const translations = {
+      ru: {
+        'site.title':'Корзина — PADOBI PC',
+        'site.brand':'PADOBI PC',
+        'menu.profile':'Профиль','menu.cart':'Корзина','menu.settings':'Настройки','menu.status':'Статус заказа',
+        'chat.support':'Поддержка','chat.greet':'Здравствуйте! Чем можем помочь?','chat.input':'Введите сообщение...','chat.thanks':'Спасибо за сообщение! Мы скоро ответим.'
+      },
+      ua: {
+        'site.title':'Кошик — PADOBI PC',
+        'site.brand':'PADOBI PC',
+        'menu.profile':'Профіль','menu.cart':'Кошик','menu.settings':'Налаштування','menu.status':'Статус замовлення',
+        'chat.support':'Підтримка','chat.greet':'Вітаємо! Як можемо допомогти?','chat.input':'Введіть повідомлення...','chat.thanks':'Дякуємо за повідомлення! Ми скоро відповімо.'
+      },
+      en: {
+        'site.title':'Cart — PADOBI PC',
+        'site.brand':'PADOBI PC',
+        'menu.profile':'Profile','menu.cart':'Cart','menu.settings':'Settings','menu.status':'Order Status',
+        'chat.support':'Support','chat.greet':'Hello! How can we help you?','chat.input':'Type a message...','chat.thanks':'Thank you! We will reply soon.'
+      }
+    };
+    const availableLangs = Object.keys(translations);
+    let currentLang = localStorage.getItem('padobi_lang') || (navigator.language || '').slice(0,2) || 'ru';
+    if(!availableLangs.includes(currentLang)) currentLang = 'ru';
+
+    function setTextIf(el, text){
+      if(!el) return;
+      if(el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = text;
+      else el.textContent = text;
+    }
+    function setLang(code){
+      if(!translations[code]) return;
+      currentLang = code;
+      localStorage.setItem('padobi_lang', code);
+      // update all elements with data-i18n
+      document.querySelectorAll('[data-i18n]').forEach(el=>{
+        const key = el.getAttribute('data-i18n');
+        if(key && translations[code][key] !== undefined) setTextIf(el, translations[code][key]);
+      });
+      // update placeholders
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+        const key = el.getAttribute('data-i18n-placeholder');
+        if(key && translations[code][key] !== undefined){
+          if(el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = translations[code][key];
+          else el.setAttribute('title', translations[code][key]);
+        }
+      });
+      // title
+      if(translations[code]['site.title']) document.title = translations[code]['site.title'];
+      document.documentElement.setAttribute('lang', code);
+      // update lang buttons visuals
+      document.querySelectorAll('.lang button').forEach(btn=>{
+        const b = btn.getAttribute('data-lang');
+        const active = b === code;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    }
+
+    // bind language buttons early and menu/profile
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.querySelectorAll('.lang button').forEach(btn=>{
+        const code = btn.getAttribute('data-lang') || btn.textContent.trim().toLowerCase();
+        btn.setAttribute('data-lang', code);
+        btn.addEventListener('click', ()=> setLang(code));
+      });
+      setLang(currentLang);
+
+      // dropdown menu toggle
+      const menuBtn = document.getElementById('menuBtn');
+      const menuDropdown = document.getElementById('menuDropdown');
+      const menu = document.getElementById('menu');
+      if(menuBtn){
+        menuBtn.addEventListener('click', (e)=>{
+          e.stopPropagation();
+          const open = menuDropdown.classList.toggle('open');
+          menuBtn.setAttribute('aria-expanded', String(open));
+          if(menu) menu.setAttribute('aria-hidden', String(!open));
+        });
+        document.addEventListener('click', (e)=>{
+          if(!menuDropdown.contains(e.target) && menuDropdown.classList.contains('open')){
+            menuDropdown.classList.remove('open');
+            menuBtn.setAttribute('aria-expanded','false');
+            if(menu) menu.setAttribute('aria-hidden','true');
+          }
+        });
+      }
+
+      // profile button behavior (simple: go to profile page)
+      document.getElementById('headerProfileBtn').addEventListener('click', ()=> {
+        window.location.href = 'profile.html';
+      });
+
+      // CHAT wiring (точь-в-точь поведение как на главной)
+      const chatToggle = document.getElementById('chatToggle');
+      const chatWindow = document.getElementById('chatWindow');
+      const chatClose = document.getElementById('chatClose');
+      const chatSend = document.getElementById('chatSend');
+      const chatInput = document.getElementById('chatInput');
+      const chatMessages = document.getElementById('chatMessages');
+
+      function appendUserMessage(text){
+        const userMsg = document.createElement('div');
+        userMsg.className = 'msg user';
+        userMsg.textContent = text;
+        chatMessages.appendChild(userMsg);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+      function appendBotMessage(text){
+        const botMsg = document.createElement('div');
+        botMsg.className = 'msg bot';
+        botMsg.textContent = text;
+        chatMessages.appendChild(botMsg);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      chatToggle && chatToggle.addEventListener('click', ()=>{
+        const isOpen = chatWindow.style.display === 'flex';
+        if(isOpen){ chatWindow.style.display = 'none'; chatWindow.setAttribute('aria-hidden','true'); }
+        else { chatWindow.style.display = 'flex'; chatWindow.setAttribute('aria-hidden','false'); chatInput && chatInput.focus(); }
+      });
+      chatClose && chatClose.addEventListener('click', ()=> { chatWindow.style.display = 'none'; chatWindow.setAttribute('aria-hidden','true'); });
+      if(chatSend){
+        chatSend.addEventListener('click', ()=>{
+          const text = (chatInput.value || '').trim();
+          if(!text) return;
+          appendUserMessage(text);
+          chatInput.value = '';
+          setTimeout(()=> appendBotMessage(translations[currentLang]['chat.thanks'] || 'Спасибо! Мы скоро ответим.'), 600);
+        });
+      }
+      chatInput && chatInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ e.preventDefault(); chatSend && chatSend.click(); } });
+
+      // replace initial bot message with current language
+      const firstBot = document.querySelector('.chat-messages .msg.bot');
+      if(firstBot) firstBot.textContent = translations[currentLang]['chat.greet'] || firstBot.textContent;
+    });
+
+    // Helpers and cart logic (unchanged)
     function parseIntSafe(v){ return Number(String(v).replace(/\s+/g,'').replace(/[^0-9\-\.]/g,'')) || 0; }
     function formatMoney(n){ return n.toLocaleString('ru-RU') + ' ₴'; }
 
@@ -470,7 +668,7 @@
     document.getElementById('toHomeBtn').addEventListener('click', ()=> window.location.href = 'index.html');
     steps.forEach((s,i)=> s.btn.addEventListener('click', ()=> { if(i < currentStep) goToStep(i+1); }));
 
-    // Recalculate totals (keeps logic, but summary layout now shows stacked label+value)
+    // Recalculate totals
     function recalc(){
       const items = Array.from(cartListEl.querySelectorAll('.cart-item'));
       let subtotal = 0;
@@ -613,13 +811,9 @@
       cb.checked = !cb.checked;
     });
 
-    document.getElementById('headerProfileBtn').addEventListener('click', ()=> {
-      window.location.href = 'profile.html';
-    });
-
+    // Prevent stepper buttons except first being clickable initially
     steps.forEach((s,i)=> s.btn.disabled = !(i === 0));
   </script>
 </body>
-
 </html>
 
