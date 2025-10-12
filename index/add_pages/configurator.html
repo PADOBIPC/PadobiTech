@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Конфигуратор — Padobi Tech</title>
+  <meta name="description" content="Конфигуратор ПК — PADOBI PC. Соберите свою сборку: CPU, MB, GPU, RAM, SSD, кулер, корпус и БП." />
+  <link rel="icon" href="photo_2025-09-02_11-12-54.jpg">
+  <style>
+    /* Visual tokens aligned with profile.html */
+    :root{
+      --bg:#000;
+      --panel:#0b0b0b;
+      --card:#0f0f0f;
+      --muted:#a9a9a9;
+      --text:#fff;
+      --brand:#0ff;
+      --accent:#a855f7;
+      --radius:16px;
+      --shadow:0 16px 48px rgba(0,0,0,.75);
+      --container:1200px;
+      --mono-border: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.5;
+    }
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
+    .container{max-width:var(--container);margin:0 auto;padding:0 20px}
+
+    /* Header (copied visual style from profile.html) */
+    header{
+      position:sticky;top:0;z-index:120;background:var(--bg);
+      border-bottom:1px solid rgba(255,255,255,0.03);
+      box-shadow:0 0 20px rgba(0,255,255,.04);
+      backdrop-filter: blur(4px);
+    }
+    .nav{height:72px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 20px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:900;letter-spacing:.6px;cursor:pointer}
+    .brand__logo{width:42px;height:42px;border-radius:10px;overflow:hidden;flex-shrink:0;box-shadow:0 0 10px rgba(0,255,255,0.12)}
+    .brand__logo img{width:100%;height:100%;object-fit:cover;display:block}
+    .brand__text{font-size:18px;text-transform:uppercase}
+    .actions{display:flex;align-items:center;gap:12px}
+    .lang{display:flex;gap:8px;align-items:center}
+    .lang button{height:34px;padding:0 12px;border-radius:8px;border:1px solid #232323;background:#0d0d0d;color:#ddd;cursor:pointer;font-weight:700;letter-spacing:.4px}
+    .lang button.active{background:#fff;color:#000;box-shadow:0 0 12px rgba(0,255,255,.18)}
+    .icon-btn{position:relative;display:grid;place-items:center;width:42px;height:42px;border-radius:10px;background:var(--panel);border:1px solid #232323;cursor:pointer;transition:.18s;overflow:visible}
+    .badge{position:absolute;top:-6px;right:-6px;background:var(--brand);color:#000;font-size:11px;font-weight:800;padding:2px 6px;border-radius:999px;border:2px solid var(--panel);box-shadow:0 0 10px var(--brand)}
+
+    /* Page layout */
+    main{padding:28px 0}
+    .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+    .top-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+    h1{margin:0;font-size:22px}
+    .lead{color:var(--muted);font-size:13px;margin-top:6px}
+
+    .layout{display:grid;grid-template-columns:1fr 380px;gap:20px}
+    @media (max-width:980px){ .layout{grid-template-columns:1fr} }
+
+    .panel{background:var(--panel);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.03);box-shadow:var(--shadow)}
+    .parts{display:grid;gap:12px}
+
+    .part{display:flex;gap:12px;align-items:flex-start;border-radius:10px;padding:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border:1px solid #171717}
+    .media{width:120px;height:84px;border-radius:8px;background:#0a0a0a;border:1px solid #161616;display:grid;place-items:center;flex-shrink:0;overflow:hidden}
+    .media img{width:100%;height:100%;object-fit:cover}
+    .meta{flex:1;min-width:0}
+    .title{font-weight:900;font-size:15px}
+    .desc{color:var(--muted);font-size:13px;margin-top:6px}
+    .options{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .option{padding:8px 10px;border-radius:8px;background:#0b0b0b;border:1px solid #232323;color:var(--muted);cursor:pointer;font-weight:800}
+    .option.selected{border-color:var(--brand);color:var(--text);background:rgba(0,255,255,0.02)}
+    .price{font-weight:900;color:var(--accent);margin-left:10px;white-space:nowrap}
+
+    .hint{margin-top:10px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.01);color:var(--muted);font-size:13px}
+
+    /* summary */
+    .summary .title{font-weight:900;font-size:16px;margin-bottom:8px}
+    .s-row{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid #151515;margin-bottom:8px}
+    .s-row .label{color:var(--muted);font-size:13px}
+    .s-row .value{font-weight:900;color:var(--text)}
+    .total{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.003));font-weight:900;font-size:16px;margin-top:8px}
+
+    .actions-col{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .btn{padding:12px;border-radius:10px;border:none;background:var(--brand);color:#000;font-weight:900;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted);font-weight:700}
+
+    .presets{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    .preset{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;background:#0b0b0b;border:1px solid #161616;cursor:pointer}
+
+    .saved{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+
+    @media (max-width:540px){
+      .media{width:100%;height:140px}
+      .part{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+  <!-- Header (same look as other pages) -->
+  <header>
+    <div class="nav container" role="banner">
+      <div style="display:flex;align-items:center;gap:12px">
+        <a class="brand" href="index.html" aria-label="PADOBI PC — Home">
+          <span class="brand__logo"><img src="logo.png" alt="Padobi logo" /></span>
+          <span class="brand__text" id="brandText">Padobi Tech</span>
+        </a>
+      </div>
+
+      <div class="actions" role="navigation" aria-label="Header actions">
+        <div class="lang" aria-label="Language switch">
+          <button type="button" data-lang="ru" aria-pressed="false">RU</button>
+          <button type="button" data-lang="ua" aria-pressed="false">UA</button>
+          <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+
+        <button id="headerProfileBtn" class="icon-btn" title="Профиль" aria-label="Профиль">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="7" r="4"/><path d="M6 21a6 6 0 0 1 12 0"/></svg>
+        </button>
+
+        <button id="goCart" class="icon-btn" title="Корзина" aria-label="Корзина">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6l-2-3"/><circle cx="9" cy="21" r="1.5"/><circle cx="18" cy="21" r="1.5"/></svg>
+          <span id="cartCount" class="badge">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="top-row">
+        <div>
+          <h1 id="pageTitle">Конфигуратор ПК</h1>
+          <div class="lead" id="pageLead">Собирайте сборку, проверяйте совместимость и добавляйте в корзину.</div>
+        </div>
+        <div style="text-align:right">
+          <small id="hintShort" class="lead" style="color:var(--muted)">Начните с CPU или GPU</small>
+        </div>
+      </div>
+
+      <div class="layout">
+        <!-- LEFT: configurator -->
+        <section class="panel" aria-label="Конфигуратор">
+          <div class="parts" id="partsRoot">
+
+            <!-- CPU -->
+            <div class="part" data-part="cpu" aria-labelledby="cpuTitle">
+              <div class="media"><img src="imgs/cpu_default.jpg" alt="CPU image" onerror="this.style.display='none'"></div>
+              <div class="meta">
+                <div class="title" id="cpuTitle">Процессор (CPU)</div>
+                <div class="desc" id="cpuDesc">Выберите процессор — сокет и TDP указаны в опциях.</div>
+
+                <div class="options" id="opt-cpu" role="list">
+                  <button class="option" data-name="Intel Core i5-14600" data-price="8500" data-socket="LGA1700" data-tdp="65">Intel i5-14600 — 8 500 ₴ — LGA1700 — 65W</button>
+                  <button class="option" data-name="Intel Core i7-14700" data-price="14500" data-socket="LGA1700" data-tdp="125">Intel i7-14700 — 14 500 ₴ — LGA1700 — 125W</button>
+                  <button class="option" data-name="AMD Ryzen 7 7800X" data-price="11000" data-socket="AM5" data-tdp="105">Ryzen 7 7800X — 11 000 ₴ — AM5 — 105W</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Motherboard -->
+            <div class="part" data-part="mb">
+              <div class="media"><img src="imgs/mb_default.jpg" alt="MB image" onerror="this.style.display='none'"></div>
+              <div class="meta">
+                <div class="title">Материнская плата (MB)</div>
+                <div class="desc">Выбирайте плату с совместимым сокетом и нужным форм-фактором.</div>
+
+                <div class="options" id="opt-mb">
+                  <button class="option" data-name="ASUS TUF LGA1700" data-price="5600" data-socket="LGA1700" data-form="ATX" data-maxGpu="360">ASUS TUF (LGA1700, ATX) — 5 600 ₴</button>
+                  <button class="option" data-name="MSI MAG AM5" data-price="6200" data-socket="AM5" data-form="ATX" data-maxGpu="340">MSI MAG (AM5, ATX) — 6 200 ₴</button>
+                  <button class="option" data-name="Gigabyte B660M" data-price="4200" data-socket="LGA1700" data-form="mATX" data-maxGpu="300">Gigabyte B660M (mATX) — 4 200 ₴</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- GPU -->
+            <div class="part" data-part="gpu">
+              <div class="media"><img src="imgs/gpu_default.jpg" alt="GPU image" onerror="this.style.display='none'"></div>
+              <div class="meta">
+                <div class="title">Видеокарта (GPU)</div>
+                <div class="desc">Укажите длину в мм и TDP (нужно для проверки корпуса и питания).</div>
+
+                <div class="options" id="opt-gpu">
+                  <button class="option" data-name="RTX 4070 Ti" data-price="25000" data-tdp="285" data-length="285">RTX 4070 Ti — 25 000 ₴ — 285mm — 285W</button>
+                  <button class="option" data-name="RTX 4090" data-price="42000" data-tdp="450" data-length="336">RTX 4090 — 42 000 ₴ — 336mm — 450W</button>
+                  <button class="option" data-name="RX 7800 XT" data-price="16000" data-tdp="300" data-length="300">RX 7800 XT — 16 000 ₴ — 300mm — 300W</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cooler -->
+            <div class="part" data-part="cooler">
+              <div class="media"><img src="imgs/cooler_default.jpg" alt="Cooler" onerror="this.style.display='none'"></div>
+              <div class="meta">
+                <div class="title">Кулер (CPU Cooler)</div>
+                <div class="desc">Высота кулера важна для совместимости с корпусом.</div>
+
+                <div class="options" id="opt-cooler">
+                  <button class="option" data-name="Air Cooler 160mm" data-price="1400" data-height="160">Air Cooler — 1 400 ₴ — 160mm</button>
+                  <button class="option" data-name="AIO 240" data-price="3600" data-height="55">AIO 240mm — 3 600 ₴ — low-profile</button>
+                  <button class="option" data-name="Air Cooler 180mm" data-price="2200" data-height="180">Air Cooler — 2 200 ₴ — 180mm</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- RAM -->
+            <div class="part" data-part="ram">
+              <div class="media"><svg width="120" height="84" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="6" width="20" height="12" rx="2"/></svg></div>
+              <div class="meta">
+                <div class="title">Оперативная память (RAM)</div>
+                <div class="desc">DDR5 рекомендуем для современных систем.</div>
+
+                <div class="options" id="opt-ram">
+                  <button class="option" data-name="16GB DDR5" data-price="2200">16 GB DDR5 — 2 200 ₴</button>
+                  <button class="option" data-name="32GB DDR5" data-price="4200">32 GB DDR5 — 4 200 ₴</button>
+                  <button class="option" data-name="64GB DDR5" data-price="8200">64 GB DDR5 — 8 200 ₴</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Storage -->
+            <div class="part" data-part="storage">
+              <div class="media"><svg width="120" height="84" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="6" rx="1"/><rect x="3" y="14" width="18" height="6" rx="1"/></svg></div>
+              <div class="meta">
+                <div class="title">Накопитель (SSD)</div>
+                <div class="desc">NVMe для системы — увеличит скорость загрузки.</div>
+
+                <div class="options" id="opt-storage">
+                  <button class="option" data-name="500GB NVMe" data-price="2400">500 GB NVMe — 2 400 ₴</button>
+                  <button class="option" data-name="1TB NVMe" data-price="4200">1 TB NVMe — 4 200 ₴</button>
+                  <button class="option" data-name="2TB NVMe" data-price="7600">2 TB NVMe — 7 600 ₴</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- PSU -->
+            <div class="part" data-part="psu">
+              <div class="media"><svg width="120" height="84" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/></svg></div>
+              <div class="meta">
+                <div class="title">Блок питания (PSU)</div>
+                <div class="desc">Выберите с запасом мощности — мы считаем необходимые Вт по компонентам.</div>
+
+                <div class="options" id="opt-psu">
+                  <button class="option" data-name="650W Gold" data-price="2600" data-watt="650">650 W Gold — 2 600 ₴</button>
+                  <button class="option" data-name="850W Gold" data-price="3600" data-watt="850">850 W Gold — 3 600 ₴</button>
+                  <button class="option" data-name="1200W Platinum" data-price="5200" data-watt="1200">1200 W Platinum — 5 200 ₴</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Case -->
+            <div class="part" data-part="case">
+              <div class="media"><img src="imgs/case_default.jpg" alt="Case image" onerror="this.style.display='none'"></div>
+              <div class="meta">
+                <div class="title">Корпус</div>
+                <div class="desc">Проверьте поддерживаемую длину видеокарты и высоту кулера.</div>
+
+                <div class="options" id="opt-case">
+                  <button class="option" data-name="Mid Tower ARGB" data-price="3200" data-maxGpu="350" data-maxCooler="170">Mid Tower ARGB — 3 200 ₴ — max GPU 350mm</button>
+                  <button class="option" data-name="Compact ATX" data-price="2400" data-maxGpu="300" data-maxCooler="160">Compact ATX — 2 400 ₴ — max GPU 300mm</button>
+                  <button class="option" data-name="Full Tower" data-price="4800" data-maxGpu="400" data-maxCooler="200">Full Tower — 4 800 ₴ — max GPU 400mm</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div id="compatHint" class="hint">Советы по совместимости и мощности появятся здесь.</div>
+        </section>
+
+        <!-- RIGHT: summary / actions -->
+        <aside>
+          <div class="panel summary" aria-label="Сводка сборки">
+            <div class="title" id="summaryTitle">Сборка — краткая сводка</div>
+
+            <div class="s-row"><div class="label">CPU</div><div class="value" id="sum-cpu">—</div></div>
+            <div class="s-row"><div class="label">MB</div><div class="value" id="sum-mb">—</div></div>
+            <div class="s-row"><div class="label">GPU</div><div class="value" id="sum-gpu">—</div></div>
+            <div class="s-row"><div class="label">RAM</div><div class="value" id="sum-ram">—</div></div>
+            <div class="s-row"><div class="label">SSD</div><div class="value" id="sum-storage">—</div></div>
+            <div class="s-row"><div class="label">Cooler</div><div class="value" id="sum-cooler">—</div></div>
+            <div class="s-row"><div class="label">PSU</div><div class="value" id="sum-psu">—</div></div>
+            <div class="s-row"><div class="label">Case</div><div class="value" id="sum-case">—</div></div>
+
+            <div class="total"><div id="totalLabel">К оплате</div><div id="grandTotal">0 ₴</div></div>
+
+            <div id="compatMessages" style="margin-top:10px;color:var(--muted);font-size:13px">Здесь будут сообщения о совместимости</div>
+
+            <div class="actions-col">
+              <button id="saveBuild" class="btn" data-i18n="save">Сохранить сборку</button>
+              <button id="addToCart" class="btn" data-i18n="add_cart">Добавить в корзину</button>
+              <button id="resetBtn" class="btn ghost" data-i18n="reset">Сбросить</button>
+            </div>
+
+            <div style="margin-top:14px">
+              <div class="title" style="font-size:14px" id="presetsTitle">Предустановки</div>
+              <div class="presets" id="presets">
+                <div class="preset" data-preset="starter"><div>Старт — офис</div><div style="color:var(--muted)">~ 20 000 ₴</div></div>
+                <div class="preset" data-preset="gamer"><div>Игровая — сбаланс.</div><div style="color:var(--muted)">~ 55 000 ₴</div></div>
+                <div class="preset" data-preset="pro"><div>Про‑рабочая</div><div style="color:var(--muted)">~ 90 000 ₴</div></div>
+              </div>
+            </div>
+
+            <div style="margin-top:12px">
+              <div class="title" style="font-size:14px" id="savedTitle">Сохранённые сборки</div>
+              <div class="saved" id="savedBuilds"></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+    <!-- Chat -->
+  <button class="chat-btn" id="chatToggle" aria-label="Открыть чат поддержки"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+
+  <div class="chat-window" id="chatWindow" role="dialog" aria-label="Чат поддержки" aria-hidden="true">
+    <div class="chat-header"><span data-i18n="chat.support">Поддержка</span><button class="chat-close" id="chatClose" aria-label="Закрыть">×</button></div>
+    <div class="chat-messages" id="chatMessages"><div class="msg bot" data-i18n="chat.greet">Здравствуйте! Чем можем помочь?</div></div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" data-i18n-placeholder="chat.input" placeholder="Введите сообщение..." aria-label="Сообщение" />
+      <button id="chatSend" aria-label="Отправить">➤</button>
+    </div>
+  </div>
+
+  <script>
+    // Localization strings (RU/UA/EN)
+    const i18nStrings = {
+      ru: {
+        brand: 'PADOBI PC',
+        pageTitle: 'Конфигуратор ПК',
+        pageLead: 'Собирайте сборку, проверяйте совместимость и добавляйте в корзину.',
+        hintShort: 'Начните с CPU или GPU',
+        save: 'Сохранить сборку',
+        add_cart: 'Добавить в корзину',
+        reset: 'Сбросить',
+        presetsTitle: 'Предустановки',
+        savedTitle: 'Сохранённые сборки',
+        compat_ok: 'Совместимость в порядке',
+        compat_socket_mismatch: 'Несовместимость: сокет CPU и материнской платы не совпадают.',
+        compat_gpu_too_long: 'Внимание: длина видеокарты ({gpu}mm) превышает допустимую длину корпуса ({case}mm).',
+        compat_cooler_too_tall: 'Внимание: высота кулера ({h}mm) превышает допустимую высоту в корпусе ({caseH}mm).',
+        compat_psu_low: 'Внимание: рекомендованная потребность в питании ~{need}W, выбран БП {psu}W — рекомендуем блок питания мощнее.',
+        saved_build: 'Сборка сохранена локально',
+        added_cart: 'Сборка добавлена в локальную корзину'
+      },
+      ua: {
+        brand: 'PADOBI PC',
+        pageTitle: 'Конфігуратор ПК',
+        pageLead: 'Збирайте збірку, перевіряйте сумісність та додавайте в кошик.',
+        hintShort: 'Почніть з CPU або GPU',
+        save: 'Зберегти збірку',
+        add_cart: 'Додати в кошик',
+        reset: 'Скинути',
+        presetsTitle: 'Пресети',
+        savedTitle: 'Збережені збірки',
+        compat_ok: 'Сумісність в порядку',
+        compat_socket_mismatch: 'Несумісність: сокет CPU та материнської плати не співпадають.',
+        compat_gpu_too_long: 'Увага: довжина відеокарти ({gpu}мм) перевищує допустиму довжину корпусу ({case}мм).',
+        compat_cooler_too_tall: 'Увага: висота кулера ({h}мм) перевищує допустиму висоту в корпусі ({caseH}мм).',
+        compat_psu_low: 'Увага: рекомендована потреба у живленні ~{need}Вт, обрано БП {psu}Вт — рекомендуємо потужніший блок.',
+        saved_build: 'Збірку збережено локально',
+        added_cart: 'Збірку додано в локальний кошик'
+      },
+      en: {
+        brand: 'PADOBI PC',
+        pageTitle: 'PC Configurator',
+        pageLead: 'Build your PC, check compatibility and add to cart.',
+        hintShort: 'Start with CPU or GPU',
+        save: 'Save build',
+        add_cart: 'Add to cart',
+        reset: 'Reset',
+        presetsTitle: 'Presets',
+        savedTitle: 'Saved builds',
+        compat_ok: 'Compatibility OK',
+        compat_socket_mismatch: 'Socket mismatch between CPU and motherboard.',
+        compat_gpu_too_long: 'Warning: GPU length ({gpu}mm) exceeds case max length ({case}mm).',
+        compat_cooler_too_tall: 'Warning: cooler height ({h}mm) exceeds case max cooler height ({caseH}mm).',
+        compat_psu_low: 'Warning: suggested power ~{need}W, selected PSU {psu}W — consider higher wattage.',
+        saved_build: 'Build saved locally',
+        added_cart: 'Build added to local cart'
+      }
+    };
+
+    // Helper: i18n
+    let currentLang = localStorage.getItem('padobi_lang') || 'ru';
+    function t(key, vars = {}) {
+      const s = (i18nStrings[currentLang] && i18nStrings[currentLang][key]) || '';
+      return s.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : `{${k}}`));
+    }
+    // Apply translations to static elements
+    function applyTranslations(){
+      document.getElementById('brandText').textContent = t('brand');
+      document.getElementById('pageTitle').textContent = t('pageTitle');
+      document.getElementById('pageLead').textContent = t('pageLead');
+      document.getElementById('hintShort').textContent = t('hintShort');
+      document.getElementById('saveBuild').textContent = t('save');
+      document.getElementById('addToCart').textContent = t('add_cart');
+      document.getElementById('resetBtn').textContent = t('reset');
+      document.getElementById('presetsTitle').textContent = t('presetsTitle');
+      document.getElementById('savedTitle').textContent = t('savedTitle');
+    }
+
+    // Wire language buttons
+    document.querySelectorAll('.lang button').forEach(btn=>{
+      const code = btn.getAttribute('data-lang') || btn.textContent.toLowerCase();
+      btn.addEventListener('click', ()=>{
+        currentLang = code;
+        localStorage.setItem('padobi_lang', code);
+        document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('active', b.getAttribute('data-lang') === code));
+        applyTranslations();
+      });
+      // set active on load
+      if(code === currentLang) btn.classList.add('active');
+    });
+
+    // Configurator logic: selections, compatibility, price, saved builds
+    (function(){
+      function toNum(v){ return Number(String(v).replace(/[^\d.-]+/g,'')) || 0; }
+      function fmt(n){ return n.toLocaleString((currentLang==='en'?'en-US':'ru-RU')) + ' ₴'; }
+
+      const state = {
+        cpu: null,
+        mb: null,
+        gpu: null,
+        cooler: null,
+        ram: null,
+        storage: null,
+        psu: null,
+        case: null
+      };
+      const partsMap = {
+        cpu: document.getElementById('opt-cpu'),
+        mb: document.getElementById('opt-mb'),
+        gpu: document.getElementById('opt-gpu'),
+        cooler: document.getElementById('opt-cooler'),
+        ram: document.getElementById('opt-ram'),
+        storage: document.getElementById('opt-storage'),
+        psu: document.getElementById('opt-psu'),
+        case: document.getElementById('opt-case')
+      };
+
+      const sums = {
+        cpu: document.getElementById('sum-cpu'),
+        mb: document.getElementById('sum-mb'),
+        gpu: document.getElementById('sum-gpu'),
+        ram: document.getElementById('sum-ram'),
+        storage: document.getElementById('sum-storage'),
+        cooler: document.getElementById('sum-cooler'),
+        psu: document.getElementById('sum-psu'),
+        case: document.getElementById('sum-case'),
+        total: document.getElementById('grandTotal'),
+        messages: document.getElementById('compatMessages'),
+        hint: document.getElementById('compatHint')
+      };
+
+      function initOptions(){
+        Object.keys(partsMap).forEach(key=>{
+          const container = partsMap[key];
+          if(!container) return;
+          container.querySelectorAll('.option').forEach(opt=>{
+            opt.addEventListener('click', ()=>{
+              // mark selection
+              container.querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));
+              opt.classList.add('selected');
+              // store state
+              const obj = {
+                name: opt.getAttribute('data-name') || opt.textContent.trim(),
+                price: toNum(opt.getAttribute('data-price')),
+                socket: opt.getAttribute('data-socket') || null,
+                tdp: toNum(opt.getAttribute('data-tdp')),
+                length: toNum(opt.getAttribute('data-length')),
+                watt: toNum(opt.getAttribute('data-watt')),
+                height: toNum(opt.getAttribute('data-height')),
+                form: opt.getAttribute('data-form') || null,
+                maxGpu: toNum(opt.getAttribute('data-maxGpu')),
+                maxCooler: toNum(opt.getAttribute('data-maxCooler'))
+              };
+              state[key] = obj;
+              render();
+            });
+          });
+          // auto-select first option for faster UX
+          const first = container.querySelector('.option');
+          if(first) first.click();
+        });
+      }
+
+      function render(){
+        // update sums
+        Object.keys(sums).forEach(k=>{
+          if(k === 'total' || k === 'messages' || k === 'hint') return;
+          const el = sums[k];
+          el.textContent = state[k] && state[k].name ? state[k].name : '—';
+        });
+
+        // total price
+        const total = Object.keys(state).reduce((s,k)=> s + (state[k] && state[k].price ? state[k].price : 0), 0);
+        sums.total.textContent = fmt(total);
+
+        // compatibility checks:
+        const messages = [];
+        // socket check CPU <-> MB
+        if(state.cpu && state.mb && state.cpu.socket && state.mb.socket && state.cpu.socket !== state.mb.socket){
+          messages.push(t('compat_socket_mismatch'));
+        }
+
+        // GPU length vs case max
+        if(state.gpu && state.case && state.gpu.length && state.case.maxGpu && state.gpu.length > state.case.maxGpu){
+          messages.push(t('compat_gpu_too_long', { gpu: state.gpu.length, case: state.case.maxGpu }));
+        }
+
+        // cooler height vs case max
+        if(state.cooler && state.case && state.cooler.height && state.case.maxCooler && state.cooler.height > state.case.maxCooler){
+          messages.push(t('compat_cooler_too_tall', { h: state.cooler.height, caseH: state.case.maxCooler }));
+        }
+
+        // PSU calculation: recommended = base + gpuTdp + cpuTdp + extra overhead
+        const gpuTdp = state.gpu && state.gpu.tdp ? state.gpu.tdp : 0;
+        const cpuTdp = state.cpu && state.cpu.tdp ? state.cpu.tdp : 0;
+        // base consumption for other components (motherboard, ram, ssd, fans) estimate:
+        const otherEstimate = 80; // conservative base
+        const recommended = Math.ceil(gpuTdp + cpuTdp + otherEstimate + 150); // headroom + peripherals
+        const psuW = state.psu && state.psu.watt ? state.psu.watt : 0;
+        if(psuW && recommended > psuW){
+          messages.push(t('compat_psu_low', { need: recommended, psu: psuW }));
+        }
+
+        // socket hint about needing right BIOS if mismatch not present but manufacturer difference
+        if(state.cpu && state.mb && state.cpu.socket && state.mb.socket && state.cpu.socket === state.mb.socket){
+          // good — maybe show helpful note
+        }
+
+        // display messages
+        if(messages.length){
+          sums.messages.innerHTML = messages.map(m => '<div style="margin-bottom:6px;color:#ffcd6e">'+m+'</div>').join('');
+          sums.hint.textContent = '';
+        } else {
+          sums.messages.textContent = t('compat_ok');
+          sums.hint.textContent = 'Советы по совместимости и мощности появятся здесь.';
+        }
+      }
+
+      // presets quick apply
+      document.getElementById('presets').addEventListener('click', (e)=>{
+        const el = e.target.closest('.preset');
+        if(!el) return;
+        applyPreset(el.dataset.preset);
+      });
+      function applyPreset(key){
+        const map = {
+          starter: {
+            cpu: 'Intel Core i5-14600',
+            mb: 'Gigabyte B660M',
+            gpu: 'RX 7800 XT',
+            ram: '16GB DDR5',
+            storage: '500GB NVMe',
+            psu: '650W Gold',
+            cooler: 'Air Cooler 160mm',
+            case: 'Compact ATX'
+          },
+          gamer: {
+            cpu: 'Intel Core i7-14700',
+            mb: 'ASUS TUF LGA1700',
+            gpu: 'RTX 4070 Ti',
+            ram: '32GB DDR5',
+            storage: '1TB NVMe',
+            psu: '850W Gold',
+            cooler: 'Air Cooler 180mm',
+            case: 'Mid Tower ARGB'
+          },
+          pro: {
+            cpu: 'AMD Ryzen 7 7800X',
+            mb: 'MSI MAG AM5',
+            gpu: 'RTX 4090',
+            ram: '64GB DDR5',
+            storage: '2TB NVMe',
+            psu: '1200W Platinum',
+            cooler: 'AIO 240',
+            case: 'Full Tower'
+          }
+        };
+        const p = map[key];
+        if(!p) return;
+        // helper to find and click option by partial match
+        function choose(containerId, nameGuess){
+          if(!nameGuess) return;
+          const container = document.getElementById(containerId);
+          if(!container) return;
+          const opts = Array.from(container.querySelectorAll('.option'));
+          const found = opts.find(o => ((o.getAttribute('data-name') || o.textContent).toLowerCase().includes(nameGuess.toLowerCase())));
+          if(found) found.click();
+        }
+        choose('opt-cpu', p.cpu);
+        choose('opt-mb', p.mb);
+        choose('opt-gpu', p.gpu);
+        choose('opt-ram', p.ram);
+        choose('opt-storage', p.storage);
+        choose('opt-psu', p.psu);
+        choose('opt-cooler', p.cooler);
+        choose('opt-case', p.case);
+      }
+
+      // Save / load builds (localStorage)
+      const savedEl = document.getElementById('savedBuilds');
+      function loadSaved(){
+        const saved = JSON.parse(localStorage.getItem('padobi_builds') || '[]');
+        if(!saved.length){
+          savedEl.innerHTML = '<div style="color:var(--muted)">Нет сохранённых сборок</div>';
+          return;
+        }
+        savedEl.innerHTML = '';
+        saved.forEach((b, idx)=>{
+          const row = document.createElement('div');
+          row.className = 'preset';
+          row.innerHTML = `<div style="font-weight:800">${b.name || 'Сборка #' + (idx+1)}</div><div style="color:var(--muted)">${fmt(b.total)}</div>`;
+          const wrap = document.createElement('div');
+          wrap.style.display='flex';
+          wrap.style.gap='8px';
+          wrap.style.marginTop='6px';
+          const loadBtn = document.createElement('button'); loadBtn.className='btn ghost'; loadBtn.textContent='Загрузить'; loadBtn.addEventListener('click', ()=> applySaved(idx));
+          const delBtn = document.createElement('button'); delBtn.className='btn ghost'; delBtn.textContent='Удалить'; delBtn.addEventListener('click', ()=> { deleteSaved(idx); });
+          wrap.appendChild(loadBtn); wrap.appendChild(delBtn);
+          row.appendChild(wrap);
+          savedEl.appendChild(row);
+        });
+      }
+      function applySaved(idx){
+        const saved = JSON.parse(localStorage.getItem('padobi_builds') || '[]');
+        const b = saved[idx];
+        if(!b) return;
+        function choose(containerId, nameGuess){
+          if(!nameGuess) return;
+          const container = document.getElementById(containerId);
+          if(!container) return;
+          const opts = Array.from(container.querySelectorAll('.option'));
+          const found = opts.find(o => ((o.getAttribute('data-name') || o.textContent).toLowerCase().includes(nameGuess.toLowerCase())));
+          if(found) found.click();
+        }
+        choose('opt-cpu', b.cpu);
+        choose('opt-mb', b.mb);
+        choose('opt-gpu', b.gpu);
+        choose('opt-ram', b.ram);
+        choose('opt-storage', b.storage);
+        choose('opt-psu', b.psu);
+        choose('opt-cooler', b.cooler);
+        choose('opt-case', b.case);
+      }
+      function deleteSaved(idx){
+        let saved = JSON.parse(localStorage.getItem('padobi_builds') || '[]');
+        saved.splice(idx,1);
+        localStorage.setItem('padobi_builds', JSON.stringify(saved));
+        loadSaved();
+      }
+
+      document.getElementById('saveBuild').addEventListener('click', ()=>{
+        const build = {
+          name: prompt('Имя сборки') || ('Сборка ' + new Date().toLocaleString()),
+          cpu: state.cpu ? state.cpu.name : null,
+          mb: state.mb ? state.mb.name : null,
+          gpu: state.gpu ? state.gpu.name : null,
+          ram: state.ram ? state.ram.name : null,
+          storage: state.storage ? state.storage.name : null,
+          psu: state.psu ? state.psu.name : null,
+          cooler: state.cooler ? state.cooler.name : null,
+          case: state.case ? state.case.name : null,
+          total: Object.keys(state).reduce((s,k)=> s + (state[k] && state[k].price ? state[k].price : 0), 0),
+          ts: Date.now()
+        };
+        const saved = JSON.parse(localStorage.getItem('padobi_builds') || '[]');
+        saved.unshift(build);
+        localStorage.setItem('padobi_builds', JSON.stringify(saved.slice(0,20)));
+        loadSaved();
+        alert(t('saved_build'));
+      });
+
+      // Add to cart: push a special build item to padobi_cart
+      document.getElementById('addToCart').addEventListener('click', ()=>{
+        const item = {
+          id: 'build-' + Date.now(),
+          title: 'Сборка — пользовательская',
+          desc: [
+            state.cpu && state.cpu.name,
+            state.gpu && state.gpu.name,
+            state.ram && state.ram.name
+          ].filter(Boolean).join(' • '),
+          price: Object.keys(state).reduce((s,k)=> s + (state[k] && state[k].price ? state[k].price : 0), 0),
+          qty: 1
+        };
+        const cart = JSON.parse(localStorage.getItem('padobi_cart') || '[]');
+        cart.push(item);
+        localStorage.setItem('padobi_cart', JSON.stringify(cart));
+        document.getElementById('cartCount').textContent = cart.length;
+        alert(t('added_cart'));
+      });
+
+      // Reset handler
+      document.getElementById('resetBtn').addEventListener('click', ()=>{
+        if(!confirm('Сбросить выбранные компоненты?')) return;
+        Object.keys(partsMap).forEach(k=>{
+          const container = partsMap[k];
+          const first = container.querySelector('.option');
+          if(first) first.click();
+        });
+      });
+
+      // Init
+      initOptions();
+      loadSaved();
+
+      // initial render
+      // small delay to allow auto-select click handlers to finish
+      setTimeout(render, 50);
+    })();
+
+    // go to cart button
+    document.getElementById('goCart').addEventListener('click', ()=> {
+      window.location.href = 'cart.html';
+    });
+
+    // profile button
+    document.getElementById('headerProfileBtn').addEventListener('click', ()=> {
+      window.location.href = 'profile.html';
+    });
+
+    // Apply translations initial
+    applyTranslations();
+  </script>
+</body>
+
+</html>
+
+
