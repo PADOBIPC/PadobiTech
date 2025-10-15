@@ -1,26 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateManufacturerDto } from './dto/create-manufacturer.dto';
 import { UpdateManufacturerDto } from './dto/update-manufacturer.dto';
+import { Manufacturer } from './entities/manufacturer.entity';
 
 @Injectable()
 export class ManufacturersService {
-  create(createManufacturerDto: CreateManufacturerDto) {
-    return 'This action adds a new manufacturer';
+  constructor(
+    @InjectRepository(Manufacturer)
+    private readonly manufacturerRepository: Repository<Manufacturer>,
+  ) {}
+
+  create(createManufacturerDto: CreateManufacturerDto): Promise<Manufacturer> {
+    const manufacturer = this.manufacturerRepository.create(createManufacturerDto);
+    return this.manufacturerRepository.save(manufacturer);
   }
 
-  findAll() {
-    return `This action returns all manufacturers`;
+  findAll(): Promise<Manufacturer[]> {
+    return this.manufacturerRepository.find({ relations: ['categories', 'products'] });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} manufacturer`;
+  async findOne(id: number): Promise<Manufacturer> {
+    const manufacturer = await this.manufacturerRepository.findOne({
+      where: { id },
+      relations: ['categories', 'products'],
+    });
+    if (!manufacturer) {
+      throw new NotFoundException(`Manufacturer with ID ${id} not found`);
+    }
+    return manufacturer;
   }
 
-  update(id: number, updateManufacturerDto: UpdateManufacturerDto) {
-    return `This action updates a #${id} manufacturer`;
+  async update(id: number, updateManufacturerDto: UpdateManufacturerDto): Promise<Manufacturer> {
+    const manufacturer = await this.manufacturerRepository.preload({
+      id,
+      ...updateManufacturerDto,
+    });
+    if (!manufacturer) {
+      throw new NotFoundException(`Manufacturer with ID ${id} not found`);
+    }
+    return this.manufacturerRepository.save(manufacturer);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} manufacturer`;
+  async remove(id: number): Promise<void> {
+    const manufacturer = await this.findOne(id);
+    await this.manufacturerRepository.remove(manufacturer);
   }
 }

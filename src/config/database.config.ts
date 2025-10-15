@@ -1,7 +1,7 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 
-ConfigModule.forRoot(); // Загружаем переменные из .env
+ConfigModule.forRoot();
 
 export const databaseConfig: TypeOrmModuleOptions = {
   type: 'mysql',
@@ -11,7 +11,6 @@ export const databaseConfig: TypeOrmModuleOptions = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
 
-  // Ключевые опции для стабильной работы
   autoLoadEntities: true, 
-  synchronize: true, // В разработке это создаст таблицы за нас
+  synchronize: true,
 };

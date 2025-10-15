@@ -10,15 +10,13 @@ export class Category {
   @Column({ unique: true })
   name: string;
 
-  @Column('text') // 'text' подходит для длинных описаний
+  @Column('text')
   description: string;
   
-  // Описываем связь: много категорий могут принадлежать одному производителю
   @ManyToOne(() => Manufacturer, (manufacturer) => manufacturer.categories)
-  @JoinColumn({ name: 'manufacturerId' }) // Явно указываем имя колонки для связи
+  @JoinColumn({ name: 'manufacturerId' })
   manufacturer: Manufacturer;
 
-  // Описываем связь: в одной категории может быть много продуктов
   @OneToMany(() => Product, (product) => product.category)
   products: Product[];
 }
