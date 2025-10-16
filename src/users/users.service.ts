@@ -1,26 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
+
+  async create(createUserDto: CreateUserDto) {
+    const { email, password } = createUserDto;
+
+    const existingUser = await this.userRepository.findOneBy({ email });
+    if (existingUser) {
+      throw new ConflictException('Пользователь с таким email уже существует');
+    }
+
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const user = this.userRepository.create({
+      email,
+      password: hashedPassword,
+    });
+    
+    const savedUser = await this.userRepository.save(user);
+
+    const { password: _, ...result } = savedUser;
+    return result;
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findOneByEmail(email: string): Promise<User | undefined> {
+    const user = await this.userRepository.findOneBy({ email });
+    return user ?? undefined;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async findOne(id: number) {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException(`Пользователь с ID ${id} не найден`);
+    }
+    const { password: _, ...result } = user;
+    return result;
   }
 }
