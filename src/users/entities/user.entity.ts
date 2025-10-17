@@ -1,13 +1,13 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity('users') // Указываем имя таблицы в БД
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true }) // email должен быть уникальным
+  @Column({ unique: true })
   email: string;
 
   @Column()
-  password: string; // Мы будем хранить здесь хэшированный пароль, а не сам пароль
+  password: string;
 }

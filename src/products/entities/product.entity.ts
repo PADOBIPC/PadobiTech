@@ -1,5 +1,4 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-// УБИРАЕМ forwardRef
 import { Manufacturer } from '../../manufacturers/entities/manufacturer.entity';
 import { Category } from '../../categories/entities/category.entity';
 

@@ -8,21 +8,18 @@ import { LoginDto } from './dto/login.dto';
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService, // Убедитесь, что этот сервис внедрен
+    private jwtService: JwtService,
   ) {}
 
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
     
-    // 1. Находим пользователя
     const user = await this.usersService.findOneByEmail(email);
 
-    // 2. Сравниваем пароли
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Неверный email или пароль');
     }
 
-    // 3. ✅ СОЗДАЕМ И ВОЗВРАЩАЕМ ТОКЕН
     const payload = { email: user.email, sub: user.id };
     return {
       message: 'Вход выполнен успешно',
