@@ -40,14 +40,12 @@ export class ProductsService {
       categoryId,
     } = query;
 
-    // Создаем QueryBuilder для сущности Product под псевдонимом 'product'
     const qb = this.productRepository.createQueryBuilder('product');
 
-    // Добавляем связи (JOIN), чтобы можно было фильтровать и включать их в результат
     qb.leftJoinAndSelect('product.manufacturer', 'manufacturer');
     qb.leftJoinAndSelect('product.category', 'category');
-
-    // Добавляем фильтрацию, если параметры переданы
+    
+    // Фильтрация
     if (manufacturerId) {
       qb.andWhere('product.manufacturerId = :manufacturerId', { manufacturerId });
     }
@@ -55,16 +53,13 @@ export class ProductsService {
       qb.andWhere('product.categoryId = :categoryId', { categoryId });
     }
 
-    // Добавляем сортировку
-    // Важно: Указываем псевдоним таблицы ('product.id', 'manufacturer.name')
+    // Сортировка и пагинация
     const validSortBy = ['id', 'name', 'price', 'stock'].includes(sortBy) ? `product.${sortBy}` : 'product.id';
     qb.orderBy(validSortBy, order);
 
-    // Добавляем пагинацию
     qb.skip((page - 1) * limit);
     qb.take(limit);
 
-    // Выполняем запрос и получаем массив продуктов и их общее количество (для пагинации на фронте)
     const [data, count] = await qb.getManyAndCount();
 
     return { data, count };

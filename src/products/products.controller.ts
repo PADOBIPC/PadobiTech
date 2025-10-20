@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
-import { RolesGuard } from '../auth/roles.guard'; // <-- Импорт RolesGuard
-import { Roles } from '../auth/roles.decorator';   // <-- Импорт Roles
-import { Role } from '../auth/roles.enum';       // <-- Импорт Role
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { Role } from '../auth/roles.enum';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -20,7 +20,7 @@ export class ProductsController {
   }
 
   @Get()
-  findAll(@Query() query: FindProductsDto) { // Используем @Query() для получения параметров
+  findAll(@Query() query: FindProductsDto) {
     return this.productsService.findAll(query);
   }
 
@@ -36,7 +36,6 @@ export class ProductsController {
     return this.productsService.update(+id, updateProductDto);
   }
 
-  // ✅ ЗАЩИЩАЕМ УДАЛЕНИЕ: нужен токен И роль Admin
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @Delete(':id')

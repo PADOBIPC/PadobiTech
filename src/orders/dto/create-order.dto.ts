@@ -1,8 +1,8 @@
 import { IsArray, IsNotEmpty, IsNumber, IsString, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
-// Описываем одну позицию в заказе
-class OrderItemDto {
+// DTO для элемента заказа
+export class OrderItemDto {
   @IsNumber()
   @IsNotEmpty()
   productId: number;
@@ -18,7 +18,7 @@ export class CreateOrderDto {
   shippingAddress: string;
 
   @IsArray()
-  @ValidateNested({ each: true }) // Проверяем каждый элемент массива
-  @Type(() => OrderItemDto)      // Указываем тип элементов массива
+  @ValidateNested({ each: true })
+  @Type(() => OrderItemDto)
   items: OrderItemDto[];
 }

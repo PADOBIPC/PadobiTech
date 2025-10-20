@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
-import { OrderItem } from '../order-items/entities/order-item.entity'; // Импорт OrderItem
-import { Product } from '../products/entities/product.entity';     // Импорт Product
+import { OrderItem } from '../order-items/entities/order-item.entity';
+import { Product } from '../products/entities/product.entity';
 import { OrdersService } from './orders.service';
 import { OrdersController } from './orders.controller';
-import { ProductsModule } from '../products/products.module';     // Импорт ProductsModule
+import { ProductsModule } from '../products/products.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Order, OrderItem, Product]), // Добавляем репозитории
-    ProductsModule, // Чтобы иметь доступ к ProductsService (не напрямую, но нужно для TypeORM)
+    TypeOrmModule.forFeature([Order, OrderItem, Product]),
+    ProductsModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService],

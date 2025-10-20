@@ -1,6 +1,5 @@
-// src/users/entities/user.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Role } from '../../auth/roles.enum'; // <-- 1. Импортируйте Role
+import { Role } from '../../auth/roles.enum';
 import { Order } from '../../orders/entities/order.entity';
 
 @Entity('users')
@@ -14,11 +13,10 @@ export class User {
   @Column()
   password: string;
 
-  // ✅ 2. ДОБАВЬТЕ ЭТО ПОЛЕ
   @Column({
     type: 'enum',
     enum: Role,
-    default: Role.User, // По умолчанию все новые пользователи - 'user'
+    default: Role.User,
   })
   role: Role;
   

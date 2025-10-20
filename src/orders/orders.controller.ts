@@ -9,16 +9,16 @@ import { Role } from '../auth/roles.enum';
 import { User } from '../users/entities/user.entity';
 
 @Controller('orders')
-@UseGuards(JwtAuthGuard) // Защищаем все роуты заказов - только для авторизованных
+@UseGuards(JwtAuthGuard)
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   // Создание заказа (доступно для роли User)
   @Post()
-  @UseGuards(RolesGuard) // Добавляем проверку ролей
-  @Roles(Role.User)       // Только User может создавать заказ
+  @UseGuards(RolesGuard)
+  @Roles(Role.User)
   create(@Body() createOrderDto: CreateOrderDto, @Req() req) {
-    const user: User = req.user; // Получаем пользователя из запроса (добавлен JwtStrategy)
+    const user: User = req.user;
     return this.ordersService.create(createOrderDto, user);
   }
 
