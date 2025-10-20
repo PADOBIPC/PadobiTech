@@ -61,7 +61,7 @@ document.getElementById('year').textContent = new Date().getFullYear();
         'auth.login':'Login','auth.register':'Register','auth.email':'Email','auth.password':'Password','auth.username':'Username','auth.phone':'Phone',
         'auth.fill_all':'Fill all fields','auth.email_invalid':'Enter valid email','auth.phone_invalid':'Invalid phone','auth.pass_short':'Minimum 6 characters','auth.reg_ok':'Registration success! Confirm your email.','auth.reg_error':'Registration error','auth.login_error':'Login error'
       }
-    };
+    }
 
     // i18n runtime
     const available = Object.keys(translations);

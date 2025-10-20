@@ -5,7 +5,7 @@ export default function create_footer(){
       <div class="container">© 
        <span id="year"></span> 
        <span >PADOBI PC</span> —
-       <span >сервис будущего</span>
+       <span data-i18n="footer_name">сервис будущего</span>
      </div>
     `;
     return footer;

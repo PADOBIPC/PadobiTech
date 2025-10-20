@@ -17,7 +17,7 @@ export default function create_main_page(){
       <div class="grid">
         <div class="card neon-hover" style="background-image:url('../../assets/images/pc1.png')">
           <h3 data-i18n="cards.configurator" >Конфигуратор</h3>
-          <button class="btn"  data-button='/configurator'>Собрать</button>
+          <button class="btn"  data-i18n="cta.build" data-button='/configurator'>Собрать</button>
         </div>
         <div class="card neon-hover" style="background-image:url('../../assets/images/pc2.png')">
           <h3 data-i18n="cards.ready">Готовые сборки</h3>
