@@ -12,5 +12,5 @@ export const databaseConfig: TypeOrmModuleOptions = {
   database: process.env.DB_NAME,
 
   autoLoadEntities: true, 
-  synchronize: true,
+  synchronize: false,
 };

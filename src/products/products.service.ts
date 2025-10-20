@@ -6,6 +6,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { Manufacturer } from '../manufacturers/entities/manufacturer.entity';
 import { Category } from '../categories/entities/category.entity';
+import { FindProductsDto } from './dto/find-products.dto';
 
 @Injectable()
 export class ProductsService {
@@ -29,8 +30,44 @@ export class ProductsService {
     return this.productRepository.save(product);
   }
 
-  findAll(): Promise<Product[]> {
-    return this.productRepository.find({ relations: ['manufacturer', 'category'] });
+  async findAll(query: FindProductsDto): Promise<{ data: Product[], count: number }> {
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'id',
+      order = 'ASC',
+      manufacturerId,
+      categoryId,
+    } = query;
+
+    // Создаем QueryBuilder для сущности Product под псевдонимом 'product'
+    const qb = this.productRepository.createQueryBuilder('product');
+
+    // Добавляем связи (JOIN), чтобы можно было фильтровать и включать их в результат
+    qb.leftJoinAndSelect('product.manufacturer', 'manufacturer');
+    qb.leftJoinAndSelect('product.category', 'category');
+
+    // Добавляем фильтрацию, если параметры переданы
+    if (manufacturerId) {
+      qb.andWhere('product.manufacturerId = :manufacturerId', { manufacturerId });
+    }
+    if (categoryId) {
+      qb.andWhere('product.categoryId = :categoryId', { categoryId });
+    }
+
+    // Добавляем сортировку
+    // Важно: Указываем псевдоним таблицы ('product.id', 'manufacturer.name')
+    const validSortBy = ['id', 'name', 'price', 'stock'].includes(sortBy) ? `product.${sortBy}` : 'product.id';
+    qb.orderBy(validSortBy, order);
+
+    // Добавляем пагинацию
+    qb.skip((page - 1) * limit);
+    qb.take(limit);
+
+    // Выполняем запрос и получаем массив продуктов и их общее количество (для пагинации на фронте)
+    const [data, count] = await qb.getManyAndCount();
+
+    return { data, count };
   }
 
   async findOne(id: number): Promise<Product> {

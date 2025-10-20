@@ -10,11 +10,13 @@ import { ProductsModule } from './products/products.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtStrategy } from './auth/jwt.strategy';
+import { OrdersModule } from './orders/orders.module';
+import { OrderItemsModule } from './order-items/order-items.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }), 
-    TypeOrmModule.forRoot(databaseConfig), ManufacturersModule, CategoriesModule, ProductsModule, UsersModule, AuthModule,
+    TypeOrmModule.forRoot(databaseConfig), ManufacturersModule, CategoriesModule, ProductsModule, UsersModule, AuthModule, OrdersModule, OrderItemsModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
