@@ -4,9 +4,9 @@ import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
+import { FindProductsDto } from './dto/find-products.dto';
 import { Manufacturer } from '../manufacturers/entities/manufacturer.entity';
 import { Category } from '../categories/entities/category.entity';
-import { FindProductsDto } from './dto/find-products.dto';
 
 @Injectable()
 export class ProductsService {
@@ -24,7 +24,7 @@ export class ProductsService {
     const product = this.productRepository.create({
       ...productData,
       manufacturer,
-      category, 
+      category,
     });
 
     return this.productRepository.save(product);
@@ -38,32 +38,56 @@ export class ProductsService {
       order = 'ASC',
       manufacturerId,
       categoryId,
+      search,
+      minPrice,
+      maxPrice,
     } = query;
 
     const qb = this.productRepository.createQueryBuilder('product');
 
     qb.leftJoinAndSelect('product.manufacturer', 'manufacturer');
     qb.leftJoinAndSelect('product.category', 'category');
-    
-    // Фильтрация
+
+    // --- ФИЛЬТРАЦИЯ ---
     if (manufacturerId) {
       qb.andWhere('product.manufacturerId = :manufacturerId', { manufacturerId });
     }
     if (categoryId) {
       qb.andWhere('product.categoryId = :categoryId', { categoryId });
     }
+    if (minPrice) {
+      qb.andWhere('product.price >= :minPrice', { minPrice });
+    }
+    if (maxPrice) {
+      qb.andWhere('product.price <= :maxPrice', { maxPrice });
+    }
+    if (search) {
+      qb.andWhere('(product.name LIKE :search OR product.description LIKE :search)', {
+        search: `%${search}%`,
+      });
+    }
 
-    // Сортировка и пагинация
-    const validSortBy = ['id', 'name', 'price', 'stock'].includes(sortBy) ? `product.${sortBy}` : 'product.id';
-    qb.orderBy(validSortBy, order);
+    // --- СОРТИРОВКА ---
+    const validSortColumns = {
+      id: 'product.id',
+      name: 'product.name',
+      price: 'product.price',
+      stock: 'product.stock',
+      manufacturerName: 'manufacturer.name',
+      categoryName: 'category.name',
+    };
+    const orderBy = validSortColumns[sortBy] || 'product.id';
+    qb.orderBy(orderBy, order);
 
+    // --- ПАГИНАЦИЯ ---
     qb.skip((page - 1) * limit);
     qb.take(limit);
 
     const [data, count] = await qb.getManyAndCount();
-
+        
     return { data, count };
   }
+
 
   async findOne(id: number): Promise<Product> {
     const product = await this.productRepository.findOne({
@@ -84,6 +108,7 @@ export class ProductsService {
     if (!product) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
+
     return this.productRepository.save(product);
   }
 

@@ -12,11 +12,12 @@ import { AuthModule } from './auth/auth.module';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { OrdersModule } from './orders/orders.module';
 import { OrderItemsModule } from './order-items/order-items.module';
+import { ReviewsModule } from './reviews/reviews.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }), 
-    TypeOrmModule.forRoot(databaseConfig), ManufacturersModule, CategoriesModule, ProductsModule, UsersModule, AuthModule, OrdersModule, OrderItemsModule,
+    TypeOrmModule.forRoot(databaseConfig), ManufacturersModule, CategoriesModule, ProductsModule, UsersModule, AuthModule, OrdersModule, OrderItemsModule, ReviewsModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],

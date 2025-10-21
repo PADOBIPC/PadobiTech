@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsOptional, IsInt, Min, IsString, IsIn } from 'class-validator';
+import { IsOptional, IsInt, Min, IsString, IsIn, IsNumber } from 'class-validator';
 
 export class FindProductsDto {
   // Пагинация
@@ -34,4 +34,20 @@ export class FindProductsDto {
   @Type(() => Number)
   @IsInt()
   categoryId?: number;
+
+  @IsOptional()
+  @IsString()
+  search?: string; // Поиск по тексту
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  minPrice?: number; // Минимальная цена
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  maxPrice?: number; // Максимальная цена
 }
