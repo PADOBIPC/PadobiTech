@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Role } from '../../auth/roles.enum';
 import { Order } from '../../orders/entities/order.entity';
-import { Review } from 'src/reviews/entities/review.entity';
+import { Review } from '../../reviews/entities/review.entity';
 
 @Entity('users')
 export class User {

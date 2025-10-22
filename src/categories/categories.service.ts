@@ -41,16 +41,34 @@ export class CategoriesService {
     return category;
   }
 
+  // ✅ РЕФАКТОРИНГ МЕТОДА update
   async update(id: number, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
-    const category = await this.categoryRepository.preload({
-      id,
-      ...updateCategoryDto,
-    });
+    const { manufacturerId, ...categoryData } = updateCategoryDto;
+    
+    // 1. Находим категорию напрямую через репозиторий
+    const category = await this.categoryRepository.findOne({ 
+        where: { id },
+        // Можно убрать relations, если они не нужны для логики обновления
+    }); 
+
+    // 2. Если не найдена - выбрасываем ошибку
     if (!category) {
-      throw new NotFoundException(`Category with ID ${id} not found`);
+      throw new NotFoundException(`Категория с ID ${id} не найдена.`);
     }
+
+    // 3. Сливаем простые данные из DTO
+    this.categoryRepository.merge(category, categoryData);
+
+    // 4. Обновляем связь, если manufacturerId передан
+    if (manufacturerId) {
+      // Убедись, что PrimaryKey в Manufacturer называется 'id'
+      category.manufacturer = { id: manufacturerId } as Manufacturer; 
+    }
+    
+    // 5. Сохраняем обновленную сущность
     return this.categoryRepository.save(category);
   }
+  
 
   async remove(id: number): Promise<void> {
     const category = await this.findOne(id);

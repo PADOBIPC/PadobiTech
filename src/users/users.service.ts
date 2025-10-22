@@ -39,12 +39,12 @@ export class UsersService {
     return user ?? undefined;
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<User> {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`Пользователь с ID ${id} не найден`);
     }
-    const { password: _, ...result } = user;
-    return result;
-  }
+    // НЕ удаляем пароль, он нужен для внутренних проверок (например, JwtStrategy)
+    return user; 
+  } 
 }

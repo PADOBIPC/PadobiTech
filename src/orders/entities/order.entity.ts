@@ -3,11 +3,13 @@ import { User } from '../../users/entities/user.entity';
 import { OrderItem } from '../../order-items/entities/order-item.entity';
 
 export enum OrderStatus {
-  PENDING = 'pending',
-  PROCESSING = 'processing',
-  SHIPPED = 'shipped',
-  DELIVERED = 'delivered',
-  CANCELLED = 'cancelled',
+  PENDING = 'pending',          // Ожидает подтверждения/оплаты
+  PROCESSING = 'processing',    // В обработке (оплата получена, комплектуется)
+  SHIPPED = 'shipped',          // Отправлен
+  DELIVERED = 'delivered',      // Доставлен
+  COMPLETED = 'completed',      // Завершен (после доставки, опционально)
+  CANCELLED = 'cancelled',      // Отменен (пользователем или админом)
+  REFUNDED = 'refunded',        // Возвращен (полностью или частично)
 }
 
 @Entity('orders')
