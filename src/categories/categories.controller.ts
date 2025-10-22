@@ -1,12 +1,13 @@
+// src/categories/categories.controller.ts
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { RolesGuard } from '../auth/roles.guard';
-import { Roles } from '../auth/roles.decorator';
-import { Role } from '../auth/roles.enum';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // <-- Импорт
+import { RolesGuard } from '../auth/roles.guard';     // <-- Импорт
+import { Roles } from '../auth/roles.decorator';       // <-- Импорт
+import { Role } from '../auth/roles.enum';           // <-- Импорт
 
 @ApiTags('Categories')
 @Controller('categories')
