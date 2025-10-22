@@ -6,10 +6,9 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { FindProductsDto } from './dto/find-products.dto';
 import { Product } from './entities/product.entity';
 import { NotFoundException } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // Needed for Guards
-import { RolesGuard } from '../auth/roles.guard';     // Needed for Guards
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
 
-// Мок для ProductsService
 const mockProductsService = {
   create: jest.fn(),
   findAll: jest.fn(),
@@ -81,7 +80,7 @@ describe('ProductsController', () => {
       const expectedResult = { id: 1, name: 'Test' } as Product;
       mockProductsService.findOne.mockResolvedValue(expectedResult);
 
-      const result = await controller.findOne(id);
+      const result = await controller.findOne(+id);
 
       expect(result).toEqual(expectedResult);
       expect(service.findOne).toHaveBeenCalledWith(+id);
@@ -90,7 +89,7 @@ describe('ProductsController', () => {
      it('should throw NotFoundException if service throws it', async () => {
         const id = '99';
         mockProductsService.findOne.mockRejectedValue(new NotFoundException());
-        await expect(controller.findOne(id)).rejects.toThrow(NotFoundException);
+        await expect(controller.findOne(+id)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -101,7 +100,7 @@ describe('ProductsController', () => {
       const expectedResult = { id: 1, name: 'Test', stock: 20 } as Product;
       mockProductsService.update.mockResolvedValue(expectedResult);
 
-      const result = await controller.update(id, updateDto);
+      const result = await controller.update(+id, updateDto);
 
       expect(result).toEqual(expectedResult);
       expect(service.update).toHaveBeenCalledWith(+id, updateDto);
@@ -111,7 +110,7 @@ describe('ProductsController', () => {
         const id = '99';
         const updateDto: UpdateProductDto = { stock: 20 };
         mockProductsService.update.mockRejectedValue(new NotFoundException());
-        await expect(controller.update(id, updateDto)).rejects.toThrow(NotFoundException);
+        await expect(controller.update(+id, updateDto)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -120,7 +119,7 @@ describe('ProductsController', () => {
       const id = '1';
       mockProductsService.remove.mockResolvedValue(undefined);
 
-      const result = await controller.remove(id);
+      const result = await controller.remove(+id);
 
       expect(result).toBeUndefined();
       expect(service.remove).toHaveBeenCalledWith(+id);
@@ -129,7 +128,7 @@ describe('ProductsController', () => {
      it('should throw NotFoundException if service throws it', async () => {
         const id = '99';
         mockProductsService.remove.mockRejectedValue(new NotFoundException());
-        await expect(controller.remove(id)).rejects.toThrow(NotFoundException);
+        await expect(controller.remove(+id)).rejects.toThrow(NotFoundException);
     });
   });
 });

@@ -32,14 +32,13 @@ describe('ReviewsService', () => {
         ReviewsService,
         { provide: getRepositoryToken(Review), useValue: createMockRepository() },
         { provide: getRepositoryToken(Product), useValue: createMockRepository() },
-        // UserRepository не нужен напрямую, т.к. User приходит готовый
       ],
     }).compile();
 
     service = module.get<ReviewsService>(ReviewsService);
     reviewRepository = module.get(getRepositoryToken(Review));
     productRepository = module.get(getRepositoryToken(Product));
-    jest.clearAllMocks(); // Сбрасываем моки
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -50,39 +49,36 @@ describe('ReviewsService', () => {
   describe('create', () => {
     const productId = 1;
     const createDto: CreateReviewDto = { rating: 5, comment: 'Great!' };
-    const user = { id: 1, email: 'test@test.com', role: Role.User, password:'hash' } as User; // User с паролем
+    const user = { id: 1, email: 'test@test.com', role: Role.User, password:'hash' } as User;
     const product = { id: productId, name: 'Test Prod' } as Product;
-    // Данные для create
     const reviewData = {
         rating: createDto.rating,
         comment: createDto.comment,
         product: product,
         user: user,
     };
-    // Сохраненный отзыв
     const savedReview = { id: 1, ...reviewData, createdAt: new Date() } as Review;
-    // Ожидаемый результат (без пароля user)
     const expectedResult = {
         id: 1,
         rating: createDto.rating,
         comment: createDto.comment,
         product: product,
-        user: { id: user.id, email: user.email, role: user.role }, // User БЕЗ пароля
+        user: { id: user.id, email: user.email, role: user.role },
         createdAt: savedReview.createdAt,
     };
 
 
     it('should successfully create a review', async () => {
       // Arrange
-      productRepository.findOneBy!.mockResolvedValue(product); // Продукт найден
-      reviewRepository.create!.mockReturnValue(reviewData as any); // create возвращает данные
-      reviewRepository.save!.mockResolvedValue(savedReview); // save возвращает сохраненный объект
+      productRepository.findOneBy!.mockResolvedValue(product);
+      reviewRepository.create!.mockReturnValue(reviewData as any);
+      reviewRepository.save!.mockResolvedValue(savedReview);
 
       // Act
       const result = await service.create(productId, createDto, user);
 
       // Assert
-      expect(result).toEqual(expectedResult); // Проверяем результат без пароля
+      expect(result).toEqual(expectedResult);
       expect(productRepository.findOneBy).toHaveBeenCalledWith({ id: productId });
       expect(reviewRepository.create).toHaveBeenCalledWith({
         ...createDto,
@@ -94,7 +90,7 @@ describe('ReviewsService', () => {
 
     it('should throw NotFoundException if product not found', async () => {
       // Arrange
-      productRepository.findOneBy!.mockResolvedValue(null); // Продукт НЕ найден
+      productRepository.findOneBy!.mockResolvedValue(null);
 
       // Act & Assert
       await expect(service.create(productId, createDto, user)).rejects.toThrow(NotFoundException);
@@ -107,34 +103,30 @@ describe('ReviewsService', () => {
   // --- Тесты для findAllForProduct ---
   describe('findAllForProduct', () => {
     const productId = 1;
-    // Мок отзыва С паролем пользователя (как вернет find)
     const reviewWithUserPassword = {
         id: 1,
         rating: 4,
         comment: 'Okay',
         product: { id: productId },
-        user: { id: 1, email: 'test@test.com', password: 'hash' } // Пользователь С паролем
+        user: { id: 1, email: 'test@test.com', password: 'hash' }
     } as unknown as Review;
-     // Ожидаемый результат БЕЗ пароля пользователя
     const expectedReviewWithoutPassword = {
         id: 1,
         rating: 4,
         comment: 'Okay',
         product: { id: productId },
-        user: { id: 1, email: 'test@test.com' } // Пользователь БЕЗ пароля
+        user: { id: 1, email: 'test@test.com' }
     };
 
 
     it('should return an array of reviews for a product without user passwords', async () => {
       // Arrange
-      // Мокируем find, чтобы он вернул массив отзывов
-      // Здесь find должен возвращать user без пароля из-за опции select в сервисе
        const reviewsFromDb = [{
             id: 1,
             rating: 4,
             comment: 'Okay',
             product: { id: productId },
-            user: { id: 1, email: 'test@test.com' } // User БЕЗ пароля
+            user: { id: 1, email: 'test@test.com' }
         }] as Review[];
       reviewRepository.find!.mockResolvedValue(reviewsFromDb);
 
@@ -142,7 +134,7 @@ describe('ReviewsService', () => {
       const result = await service.findAllForProduct(productId);
 
       // Assert
-      expect(result).toEqual(reviewsFromDb); // Сравниваем с тем, что вернул find (уже без пароля)
+      expect(result).toEqual(reviewsFromDb);
       expect(reviewRepository.find).toHaveBeenCalledWith({
         where: { product: { id: productId } },
         relations: ['user'],
@@ -157,7 +149,7 @@ describe('ReviewsService', () => {
 
     it('should return an empty array if no reviews found', async () => {
         // Arrange
-        reviewRepository.find!.mockResolvedValue([]); // Find возвращает пустой массив
+        reviewRepository.find!.mockResolvedValue([]);
 
         // Act
         const result = await service.findAllForProduct(productId);
@@ -172,7 +164,4 @@ describe('ReviewsService', () => {
     });
   });
 
-  // --- Тесты для remove (опционально, можно добавить позже) ---
-  // describe('remove', () => { ... });
-
-}); // Конец describe('ReviewsService')
+});

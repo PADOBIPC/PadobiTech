@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsOptional, IsInt, Min, IsString, IsIn, IsNumber } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger'; // Используем Optional
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class FindProductsDto {
   @ApiPropertyOptional({ description: 'Номер страницы', default: 1, minimum: 1 })

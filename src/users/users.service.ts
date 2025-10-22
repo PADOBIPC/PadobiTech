@@ -44,7 +44,6 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(`Пользователь с ID ${id} не найден`);
     }
-    // НЕ удаляем пароль, он нужен для внутренних проверок (например, JwtStrategy)
     return user; 
   } 
 }

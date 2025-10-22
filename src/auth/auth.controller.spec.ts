@@ -46,7 +46,6 @@ describe('AuthController', () => {
       // Assert
       expect(result).toEqual(expectedResult);
       expect(service.login).toHaveBeenCalledWith(loginDto);
-      // Проверка статуса обычно делается в E2E тестах, но декоратор @HttpCode(HttpStatus.OK) должен сработать
     });
   });
 });

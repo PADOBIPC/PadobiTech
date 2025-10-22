@@ -7,16 +7,13 @@ import { User } from '../users/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { Role } from './roles.enum';
 
-// ✅ ПРАВИЛЬНОЕ МОКИРОВАНИЕ BCRYPT
-// Provide mock factory to avoid TDZ ReferenceError for variables used in the factory
+// МОКИРОВАНИЕ BCRYPT
 jest.mock('bcrypt', () => ({
   compare: jest.fn(),
 }));
 
-// Helper to access the mocked compare in tests
 const mockCompare = (bcrypt.compare as unknown) as jest.Mock;
 
-// Создаем "заглушки" для зависимостей
 const mockUsersService = {
   findOneByEmail: jest.fn(),
 };
@@ -31,7 +28,6 @@ describe('AuthService', () => {
   let jwtService: JwtService;
 
   beforeEach(async () => {
-    // Убираем jest.spyOn из beforeEach
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -45,7 +41,6 @@ describe('AuthService', () => {
     usersService = module.get<UsersService>(UsersService);
     jwtService = module.get<JwtService>(JwtService);
 
-    // Сбрасываем все моки (включая мок bcrypt) перед каждым тестом
     jest.clearAllMocks();
   });
 
@@ -64,7 +59,7 @@ describe('AuthService', () => {
       const expectedToken = 'mockAccessToken';
 
       mockUsersService.findOneByEmail.mockResolvedValue(userFromDb);
-      mockCompare.mockResolvedValue(true); // Настраиваем мок compare
+      mockCompare.mockResolvedValue(true);
       mockJwtService.sign.mockReturnValue(expectedToken);
 
       // Act
@@ -73,7 +68,7 @@ describe('AuthService', () => {
       // Assert
       expect(result).toEqual({ message: 'Вход выполнен успешно', access_token: expectedToken });
       expect(mockUsersService.findOneByEmail).toHaveBeenCalledWith(loginDto.email);
-      expect(mockCompare).toHaveBeenCalledWith(loginDto.password, userFromDb.password); // Проверяем вызов мока compare
+      expect(mockCompare).toHaveBeenCalledWith(loginDto.password, userFromDb.password);
       expect(mockJwtService.sign).toHaveBeenCalledWith({ email: userFromDb.email, sub: userFromDb.id });
     });
 
@@ -85,7 +80,7 @@ describe('AuthService', () => {
       // Act & Assert
       await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException);
       expect(mockUsersService.findOneByEmail).toHaveBeenCalledWith(loginDto.email);
-      expect(mockCompare).not.toHaveBeenCalled(); // compare не должен был вызываться
+      expect(mockCompare).not.toHaveBeenCalled();
       expect(mockJwtService.sign).not.toHaveBeenCalled();
     });
 
@@ -95,7 +90,7 @@ describe('AuthService', () => {
       const userFromDb = { id: 1, email: 'test@example.com', password: 'hashedPassword', role: Role.User, orders: [], reviews: [] } as User;
 
       mockUsersService.findOneByEmail.mockResolvedValue(userFromDb);
-      mockCompare.mockResolvedValue(false); // compare возвращает false
+      mockCompare.mockResolvedValue(false);
 
       // Act & Assert
       await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException);

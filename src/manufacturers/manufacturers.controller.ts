@@ -1,23 +1,21 @@
-// src/manufacturers/manufacturers.controller.ts
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ManufacturersService } from './manufacturers.service';
 import { CreateManufacturerDto } from './dto/create-manufacturer.dto';
 import { UpdateManufacturerDto } from './dto/update-manufacturer.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // <-- Импорт
-import { RolesGuard } from '../auth/roles.guard';     // <-- Импорт
-import { Roles } from '../auth/roles.decorator';       // <-- Импорт
-import { Role } from '../auth/roles.enum';           // <-- Импорт
-
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { Role } from '../auth/roles.enum';
 @ApiTags('Manufacturers')
 @Controller('manufacturers')
 export class ManufacturersController {
   constructor(private readonly manufacturersService: ManufacturersService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard) // ✅ Защищаем
-  @Roles(Role.Admin)                   // ✅ Только админ
-  @ApiBearerAuth()                     // ✅ Указываем Swagger'у
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new manufacturer (Admin only)' })
   @ApiResponse({ status: 201, description: 'Created successfully.'})
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
@@ -43,9 +41,9 @@ export class ManufacturersController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard) // ✅ Защищаем
-  @Roles(Role.Admin)                   // ✅ Только админ
-  @ApiBearerAuth()                     // ✅ Указываем Swagger'у
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update a manufacturer (Admin only)' })
   @ApiParam({ name: 'id', description: 'Manufacturer ID', type: Number })
   @ApiResponse({ status: 200, description: 'Updated successfully.'})
@@ -57,12 +55,12 @@ export class ManufacturersController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard) // ✅ Защищаем
-  @Roles(Role.Admin)                   // ✅ Только админ
-  @ApiBearerAuth()                     // ✅ Указываем Swagger'у
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a manufacturer (Admin only)' })
   @ApiParam({ name: 'id', description: 'Manufacturer ID', type: Number })
-  @ApiResponse({ status: 200, description: 'Deleted successfully.'}) // Или 204
+  @ApiResponse({ status: 200, description: 'Deleted successfully.'})
   @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })

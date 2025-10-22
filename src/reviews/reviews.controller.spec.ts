@@ -8,14 +8,12 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { NotFoundException } from '@nestjs/common';
 import { Role } from '../auth/roles.enum';
 
-// Мок ReviewsService
 const mockReviewsService = {
   create: jest.fn(),
   findAllForProduct: jest.fn(),
   remove: jest.fn(),
 };
 
-// Мок объекта запроса (req) с пользователем
 const mockRequest = (user: any) => ({
   user: user,
 });
@@ -82,5 +80,4 @@ describe('ReviewsController', () => {
     });
   });
 
-  // Тесты для remove можно добавить по аналогии, если он будет реализован
 });

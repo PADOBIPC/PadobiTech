@@ -21,11 +21,10 @@ const createMockRepository = <T extends ObjectLiteral>(): MockRepository<T> => (
   create: jest.fn(),
   save: jest.fn(),
   findOneBy: jest.fn(),
-  createQueryBuilder: jest.fn(), // Needed for findAll with pagination
+  createQueryBuilder: jest.fn(),
 });
 
 // --- Моки Транзакций ---
-// Тип для мока QueryRunner и его менеджера
 type MockQueryRunner = Partial<Record<Exclude<keyof QueryRunner, 'manager'>, jest.Mock>> & {
   manager: {
     findOne: jest.Mock;
@@ -33,7 +32,7 @@ type MockQueryRunner = Partial<Record<Exclude<keyof QueryRunner, 'manager'>, jes
     create: jest.Mock;
   };
 };
-// Тип для мока DataSource
+
 type MockDataSource = Partial<Record<keyof DataSource, jest.Mock>> & {
   createQueryRunner: jest.Mock<MockQueryRunner>;
 };
@@ -58,24 +57,21 @@ describe('OrdersService', () => {
   let mockQueryBuilder: MockOrderQueryBuilder;
 
   beforeEach(async () => {
-    // Создаем мок QueryRunner
     queryRunner = {
       connect: jest.fn().mockResolvedValue(undefined),
       startTransaction: jest.fn().mockResolvedValue(undefined),
       commitTransaction: jest.fn().mockResolvedValue(undefined),
       rollbackTransaction: jest.fn().mockResolvedValue(undefined),
       release: jest.fn().mockResolvedValue(undefined),
-      manager: { // Мокируем методы менеджера транзакций
+      manager: {
         findOne: jest.fn(),
         save: jest.fn(),
         create: jest.fn(),
       },
     };
-    // Создаем мок DataSource
     dataSource = {
       createQueryRunner: jest.fn().mockReturnValue(queryRunner),
     };
-     // Создаем мок QueryBuilder для findAll
      mockQueryBuilder = {
         leftJoinAndSelect: jest.fn().mockReturnThis(),
         andWhere: jest.fn().mockReturnThis(),
@@ -90,7 +86,7 @@ describe('OrdersService', () => {
         OrdersService,
         { provide: getRepositoryToken(Order), useValue: createMockRepository() },
         { provide: getRepositoryToken(Product), useValue: createMockRepository() },
-        { provide: DataSource, useValue: dataSource }, // Предоставляем мок DataSource
+        { provide: DataSource, useValue: dataSource },
       ],
     }).compile();
 
@@ -98,9 +94,8 @@ describe('OrdersService', () => {
     orderRepository = module.get(getRepositoryToken(Order));
     productRepository = module.get(getRepositoryToken(Product));
 
-    // Настраиваем createQueryBuilder ПОСЛЕ получения инстанса репозитория
     orderRepository.createQueryBuilder!.mockReturnValue(mockQueryBuilder as any);
-    jest.clearAllMocks(); // Сбрасываем все моки
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -118,16 +113,15 @@ describe('OrdersService', () => {
 
     it('should create an order successfully using transactions', async () => {
       // Arrange
-      queryRunner.manager.findOne.mockResolvedValue(product); // Product found
-      queryRunner.manager.create // Mock OrderItem creation
+      queryRunner.manager.findOne.mockResolvedValue(product);
+      queryRunner.manager.create
         .mockImplementation((entityCtor, data) => (entityCtor === OrderItem ? { ...data } : {}));
-      queryRunner.manager.create // Mock Order creation
+      queryRunner.manager.create
         .mockImplementation((entityCtor, data) => (entityCtor === Order ? { ...data } : {}));
-      queryRunner.manager.save // Mock Product save (stock update)
+      queryRunner.manager.save
         .mockImplementation((entityCtor, data) => (entityCtor === Product ? Promise.resolve({ ...data }) : Promise.resolve({})));
-      queryRunner.manager.save // Mock Order save
+      queryRunner.manager.save
         .mockImplementation((entityCtor, data) => (entityCtor === Order ? Promise.resolve({ ...data, id: 1, createdAt: new Date() }) : Promise.resolve({})));
-      // Мокируем findOne, который вызывается в конце create
       jest.spyOn(service, 'findOne').mockResolvedValue(savedOrder);
 
       // Act
@@ -138,39 +132,36 @@ describe('OrdersService', () => {
       expect(dataSource.createQueryRunner).toHaveBeenCalledTimes(1);
       expect(queryRunner.connect).toHaveBeenCalledTimes(1);
       expect(queryRunner.startTransaction).toHaveBeenCalledTimes(1);
-      // Проверка операций внутри транзакции
       expect(queryRunner.manager.findOne).toHaveBeenCalledWith(Product, { where: { id: 1 } });
-      expect(queryRunner.manager.save).toHaveBeenCalledWith(Product, { ...product, stock: 3 }); // Проверка уменьшения стока
+      expect(queryRunner.manager.save).toHaveBeenCalledWith(Product, { ...product, stock: 3 });
       expect(queryRunner.manager.create).toHaveBeenCalledWith(OrderItem, expect.objectContaining({ quantity: 2, price: 10 }));
       expect(queryRunner.manager.create).toHaveBeenCalledWith(Order, expect.objectContaining({ totalAmount: 20 }));
-      expect(queryRunner.manager.save).toHaveBeenCalledWith(Order, expect.any(Object)); // Проверка сохранения заказа
-      // Проверка завершения транзакции
+      expect(queryRunner.manager.save).toHaveBeenCalledWith(Order, expect.any(Object));
       expect(queryRunner.commitTransaction).toHaveBeenCalledTimes(1);
       expect(queryRunner.rollbackTransaction).not.toHaveBeenCalled();
       expect(queryRunner.release).toHaveBeenCalledTimes(1);
-       // Проверка финального вызова findOne
       expect(service.findOne).toHaveBeenCalledWith(savedOrder.id, user);
     });
 
      it('should rollback transaction if product not found', async () => {
        // Arrange
-       queryRunner.manager.findOne.mockResolvedValue(null); // Product not found
-       jest.spyOn(service, 'findOne'); // Шпионим, чтобы проверить, что он не вызывался
+       queryRunner.manager.findOne.mockResolvedValue(null);
+       jest.spyOn(service, 'findOne');
 
        // Act & Assert
        await expect(service.create(createDto, user)).rejects.toThrow(NotFoundException);
        expect(queryRunner.startTransaction).toHaveBeenCalledTimes(1);
        expect(queryRunner.manager.findOne).toHaveBeenCalledWith(Product, { where: { id: 1 } });
-       expect(queryRunner.manager.save).not.toHaveBeenCalled(); // Ничего не должно было сохраниться
+       expect(queryRunner.manager.save).not.toHaveBeenCalled();
        expect(queryRunner.commitTransaction).not.toHaveBeenCalled();
-       expect(queryRunner.rollbackTransaction).toHaveBeenCalledTimes(1); // Откат!
+       expect(queryRunner.rollbackTransaction).toHaveBeenCalledTimes(1);
        expect(queryRunner.release).toHaveBeenCalledTimes(1);
        expect(service.findOne).not.toHaveBeenCalled();
      });
 
      it('should rollback transaction if stock is insufficient', async () => {
        // Arrange
-       const lowStockProduct = { ...product, stock: 1 }; // Only 1 in stock
+       const lowStockProduct = { ...product, stock: 1 };
        queryRunner.manager.findOne.mockResolvedValue(lowStockProduct);
        jest.spyOn(service, 'findOne');
 
@@ -180,7 +171,7 @@ describe('OrdersService', () => {
        expect(queryRunner.manager.findOne).toHaveBeenCalledWith(Product, { where: { id: 1 } });
        expect(queryRunner.manager.save).not.toHaveBeenCalled();
        expect(queryRunner.commitTransaction).not.toHaveBeenCalled();
-       expect(queryRunner.rollbackTransaction).toHaveBeenCalledTimes(1); // Откат!
+       expect(queryRunner.rollbackTransaction).toHaveBeenCalledTimes(1);
        expect(queryRunner.release).toHaveBeenCalledTimes(1);
        expect(service.findOne).not.toHaveBeenCalled();
      });
@@ -188,15 +179,13 @@ describe('OrdersService', () => {
 
   // --- Тесты для findAll (с QueryBuilder) ---
   describe('findAll', () => {
-    const user = { id: 1, email: 'user@test.com', role: Role.User, password:'hash' } as User; // Добавим пароль в мок
+    const user = { id: 1, email: 'user@test.com', role: Role.User, password:'hash' } as User;
     const admin = { id: 2, email: 'admin@test.com', role: Role.Admin, password:'hash' } as User;
     const queryDto = new FindOrdersDto();
-    // Моки заказов С паролем пользователя
     const ordersWithPassword = [
       { id: 1, user: user, items: [], status: OrderStatus.PENDING, totalAmount: 10, createdAt: new Date(), shippingAddress: '' },
       { id: 2, user: user, items: [], status: OrderStatus.PENDING, totalAmount: 20, createdAt: new Date(), shippingAddress: '' }
     ] as Order[];
-    // Ожидаемый результат БЕЗ пароля пользователя
     const expectedOrdersWithoutPassword = ordersWithPassword.map(o => ({...o, user: {id: o.user.id, email: o.user.email, role: o.user.role}}));
 
     it('should return orders for the current user and remove password', async () => {
@@ -204,10 +193,10 @@ describe('OrdersService', () => {
         mockQueryBuilder.getManyAndCount.mockResolvedValue([ordersWithPassword, ordersWithPassword.length]);
 
         // Act
-        const result = await service.findAll(queryDto, user); // Передаем user
+        const result = await service.findAll(queryDto, user);
 
         // Assert
-        expect(result.data).toEqual(expectedOrdersWithoutPassword); // Проверяем результат без пароля
+        expect(result.data).toEqual(expectedOrdersWithoutPassword);
         expect(result.count).toEqual(ordersWithPassword.length);
         expect(orderRepository.createQueryBuilder).toHaveBeenCalledWith('order');
         expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith('order.userId = :currentUserId', { currentUserId: user.id });
@@ -224,31 +213,26 @@ describe('OrdersService', () => {
          mockQueryBuilder.getManyAndCount.mockResolvedValue([allOrdersWithPassword, allOrdersWithPassword.length]);
 
          // Act
-         const result = await service.findAll(queryDto, admin); // Admin вызывает БЕЗ user ID в DTO
+         const result = await service.findAll(queryDto, admin);
 
          // Assert
          expect(result.data).toEqual(expectedAllOrdersWithoutPassword);
          expect(result.count).toEqual(allOrdersWithPassword.length);
          expect(orderRepository.createQueryBuilder).toHaveBeenCalledWith('order');
-         // ✅ Проверяем, что НЕ БЫЛО фильтрации по userId
          expect(mockQueryBuilder.andWhere).not.toHaveBeenCalledWith(expect.stringContaining('userId'), expect.any(Object));
          expect(mockQueryBuilder.getManyAndCount).toHaveBeenCalled();
     });
-
-    // ... тесты для фильтрации по status и userId для админа ...
   });
 
   // --- Тесты для findOne ---
-  describe('findAll', () => {
-    const user = { id: 1, email: 'user@test.com', role: Role.User, password:'hash' } as User; // Добавим пароль в мок
+  describe('findOne', () => {
+    const user = { id: 1, email: 'user@test.com', role: Role.User, password:'hash' } as User;
     const admin = { id: 2, email: 'admin@test.com', role: Role.Admin, password:'hash' } as User;
     const queryDto = new FindOrdersDto();
-    // Моки заказов С паролем пользователя
     const ordersWithPassword = [
       { id: 1, user: user, items: [], status: OrderStatus.PENDING, totalAmount: 10, createdAt: new Date(), shippingAddress: '' },
       { id: 2, user: user, items: [], status: OrderStatus.PENDING, totalAmount: 20, createdAt: new Date(), shippingAddress: '' }
     ] as Order[];
-    // Ожидаемый результат БЕЗ пароля пользователя
     const expectedOrdersWithoutPassword = ordersWithPassword.map(o => ({...o, user: {id: o.user.id, email: o.user.email, role: o.user.role}}));
 
     it('should return orders for the current user and remove password', async () => {
@@ -256,10 +240,10 @@ describe('OrdersService', () => {
         mockQueryBuilder.getManyAndCount.mockResolvedValue([ordersWithPassword, ordersWithPassword.length]);
 
         // Act
-        const result = await service.findAll(queryDto, user); // Передаем user
+        const result = await service.findAll(queryDto, user);
 
         // Assert
-        expect(result.data).toEqual(expectedOrdersWithoutPassword); // Проверяем результат без пароля
+        expect(result.data).toEqual(expectedOrdersWithoutPassword);
         expect(result.count).toEqual(ordersWithPassword.length);
         expect(orderRepository.createQueryBuilder).toHaveBeenCalledWith('order');
         expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith('order.userId = :currentUserId', { currentUserId: user.id });
@@ -276,18 +260,16 @@ describe('OrdersService', () => {
          mockQueryBuilder.getManyAndCount.mockResolvedValue([allOrdersWithPassword, allOrdersWithPassword.length]);
 
          // Act
-         const result = await service.findAll(queryDto, admin); // Admin вызывает БЕЗ user ID в DTO
+         const result = await service.findAll(queryDto, admin);
 
          // Assert
          expect(result.data).toEqual(expectedAllOrdersWithoutPassword);
          expect(result.count).toEqual(allOrdersWithPassword.length);
          expect(orderRepository.createQueryBuilder).toHaveBeenCalledWith('order');
-         // ✅ Проверяем, что НЕ БЫЛО фильтрации по userId
          expect(mockQueryBuilder.andWhere).not.toHaveBeenCalledWith(expect.stringContaining('userId'), expect.any(Object));
          expect(mockQueryBuilder.getManyAndCount).toHaveBeenCalled();
     });
 
-    // ... тесты для фильтрации по status и userId для админа ...
   });
 
   // --- Тесты для updateStatus ---
@@ -296,7 +278,6 @@ describe('OrdersService', () => {
      const updateDto: UpdateOrderStatusDto = { status: OrderStatus.SHIPPED };
      const order = { id: orderId, status: OrderStatus.PENDING, user: { id: 1, email:'test@test.com', password: 'hash' } } as Order;
      const updatedOrderData = { ...order, status: OrderStatus.SHIPPED };
-     // Ожидаемый результат без пароля
      const expectedUpdatedOrder = { id: orderId, status: OrderStatus.SHIPPED, user: { id: 1, email:'test@test.com' } };
 
 
@@ -324,4 +305,4 @@ describe('OrdersService', () => {
      });
   });
 
-}); // Конец describe('OrdersService')
+});

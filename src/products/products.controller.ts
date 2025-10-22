@@ -28,7 +28,6 @@ export class ProductsController {
 
   @Get()
   @ApiOperation({ summary: 'Get a list of products with filters and pagination' })
-  // Описываем все query параметры из FindProductsDto
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'sortBy', required: false, type: String, enum: ['id', 'name', 'price', 'stock', 'manufacturerName', 'categoryName'] })

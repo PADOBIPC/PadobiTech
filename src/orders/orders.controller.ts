@@ -12,7 +12,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth, ApiQuery }
 import { OrderStatus } from './entities/order.entity';
 
 @ApiTags('Orders')
-@ApiBearerAuth() // Весь контроллер требует аутентификации
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('orders')
 export class OrdersController {
@@ -33,7 +33,6 @@ export class OrdersController {
 
   @Get()
   @ApiOperation({ summary: 'Get orders (User sees own, Admin sees based on query)' })
-  // ApiQuery декораторы берем из FindOrdersDto
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'sortBy', required: false, type: String, enum: ['id', 'createdAt', 'totalAmount', 'status', 'userEmail'] })
@@ -62,7 +61,6 @@ export class OrdersController {
      if (user.role === Role.Admin) {
        return this.ordersService.findOne(id);
      } else {
-       // Сервис findOne уже проверяет принадлежность заказа пользователю
        return this.ordersService.findOne(id, user);
      }
   }

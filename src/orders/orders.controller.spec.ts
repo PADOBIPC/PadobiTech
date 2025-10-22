@@ -11,7 +11,6 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Role } from '../auth/roles.enum';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 
-// Мок OrdersService
 const mockOrdersService = {
   create: jest.fn(),
   findAll: jest.fn(),
@@ -19,7 +18,6 @@ const mockOrdersService = {
   updateStatus: jest.fn(),
 };
 
-// Мок объекта запроса (req) с пользователем
 const mockRequest = (user: any) => ({
   user: user,
 });
@@ -42,7 +40,7 @@ describe('OrdersController', () => {
       ],
     })
     .overrideGuard(JwtAuthGuard).useValue({ canActivate: jest.fn(() => true) })
-    .overrideGuard(RolesGuard).useValue({ canActivate: jest.fn(() => true) }) // Мокируем оба Guard
+    .overrideGuard(RolesGuard).useValue({ canActivate: jest.fn(() => true) })
     .compile();
 
     controller = module.get<OrdersController>(OrdersController);
@@ -66,7 +64,6 @@ describe('OrdersController', () => {
       expect(result).toEqual(expectedResult);
       expect(service.create).toHaveBeenCalledWith(createDto, mockUser);
     });
-    // Тест на проверку роли Role.User обрабатывается RolesGuard, его можно не писать здесь
   });
 
   describe('findAll', () => {
@@ -79,7 +76,6 @@ describe('OrdersController', () => {
       const result = await controller.findAll(req, query);
 
       expect(result).toEqual(expectedResult);
-      // Пользователь видит только свои, сервис вызывается с его ID
       expect(service.findAll).toHaveBeenCalledWith(query, mockUser);
     });
 
@@ -87,12 +83,11 @@ describe('OrdersController', () => {
         const query = new FindOrdersDto();
         const expectedResult = { data: [], count: 0 };
         mockOrdersService.findAll.mockResolvedValue(expectedResult);
-        const req = mockRequest(mockAdmin); // Админ
+        const req = mockRequest(mockAdmin);
 
         const result = await controller.findAll(req, query);
 
         expect(result).toEqual(expectedResult);
-        // Админ может видеть все, сервис вызывается без user ID
         expect(service.findAll).toHaveBeenCalledWith(query);
     });
   });
@@ -105,7 +100,7 @@ describe('OrdersController', () => {
       mockOrdersService.findOne.mockResolvedValue(expectedResult);
       const req = mockRequest(mockUser);
 
-      const result = await controller.findOne(orderId, req);
+      const result = await controller.findOne(+orderId, req);
 
       expect(result).toEqual(expectedResult);
       expect(service.findOne).toHaveBeenCalledWith(+orderId, mockUser);
@@ -114,18 +109,18 @@ describe('OrdersController', () => {
      it('should call service.findOne with id only for admin', async () => {
       const expectedResult = { id: 1 } as Order;
       mockOrdersService.findOne.mockResolvedValue(expectedResult);
-      const req = mockRequest(mockAdmin); // Админ
+      const req = mockRequest(mockAdmin);
 
-      const result = await controller.findOne(orderId, req);
+      const result = await controller.findOne(+orderId, req);
 
       expect(result).toEqual(expectedResult);
-      expect(service.findOne).toHaveBeenCalledWith(+orderId); // Без user
+      expect(service.findOne).toHaveBeenCalledWith(+orderId);
     });
 
      it('should throw NotFoundException if service throws it', async () => {
         const req = mockRequest(mockUser);
         mockOrdersService.findOne.mockRejectedValue(new NotFoundException());
-        await expect(controller.findOne(orderId, req)).rejects.toThrow(NotFoundException);
+        await expect(controller.findOne(+orderId, req)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -135,9 +130,8 @@ describe('OrdersController', () => {
           const updateDto: UpdateOrderStatusDto = { status: OrderStatus.SHIPPED };
           const expectedResult = { id: 1, status: OrderStatus.SHIPPED } as Order;
           mockOrdersService.updateStatus.mockResolvedValue(expectedResult);
-          // const req = mockRequest(mockAdmin); // req здесь не нужен, т.к. роль проверяет Guard
 
-          const result = await controller.updateStatus(+id, updateDto); // Передаем числовой id
+          const result = await controller.updateStatus(+id, updateDto);
 
           expect(result).toEqual(expectedResult);
           expect(service.updateStatus).toHaveBeenCalledWith(+id, updateDto);
@@ -149,6 +143,5 @@ describe('OrdersController', () => {
           mockOrdersService.updateStatus.mockRejectedValue(new NotFoundException());
           await expect(controller.updateStatus(+id, updateDto)).rejects.toThrow(NotFoundException);
       });
-      // Тест на проверку роли Role.Admin обрабатывается RolesGuard
   });
 });

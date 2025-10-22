@@ -67,7 +67,6 @@ export class OrdersService {
       const savedOrder = await queryRunner.manager.save(Order, order);
       await queryRunner.commitTransaction();
       
-      // Перезапрашиваем с нужными связями, чтобы вернуть полный объект
       return await this.findOne(savedOrder.id, user); 
     
     } catch (error) {
@@ -78,12 +77,9 @@ export class OrdersService {
     }
   }
 
-  // Метод findAll с пагинацией, фильтрацией и сортировкой
-  // src/orders/orders.service.ts
-
   async findAll(
     query: FindOrdersDto, 
-    currentUser?: User // Необязательный пользователь для проверки прав
+    currentUser?: User
   ): Promise<{ data: Order[], count: number }> {
     const {
       page = 1,
@@ -91,7 +87,7 @@ export class OrdersService {
       sortBy = 'createdAt',
       order = 'DESC',
       status,
-      userId, // Может прийти от админа из DTO
+      userId,
     } = query;
 
     const qb = this.orderRepository.createQueryBuilder('order');
@@ -100,26 +96,19 @@ export class OrdersService {
     qb.leftJoinAndSelect('order.items', 'orderItem');
     qb.leftJoinAndSelect('orderItem.product', 'product');
 
-    // --- ФИЛЬТРАЦИЯ (Исправленная логика) ---
-    if (currentUser) { // Проверка нужна, если вдруг currentUser не передан
+    // --- ФИЛЬТРАЦИЯ ---
+    if (currentUser) {
         if (currentUser.role !== Role.Admin) {
-            // Обычный пользователь ВСЕГДА видит только свои заказы
             qb.andWhere('order.userId = :currentUserId', { currentUserId: currentUser.id });
         } else {
-            // Это АДМИН
             if (userId) {
-                // Если админ передал userId в query, фильтруем по нему
                 qb.andWhere('order.userId = :userId', { userId });
             }
-            // Если админ НЕ передал userId, НЕ добавляем фильтр по пользователю (видит все)
         }
     } else {
-        // Случай, если currentUser не определен (например, для публичного API, если бы оно было)
-        // Здесь можно выбросить ошибку или применить другие правила
-        // В нашем случае findAll вызывается из контроллера, где user всегда есть
+
     }
     
-    // Фильтр по статусу (остается без изменений)
     if (status) {
       qb.andWhere('order.status = :status', { status });
     }
@@ -140,8 +129,6 @@ export class OrdersService {
     qb.take(limit);
 
     const [data, count] = await qb.getManyAndCount();
-
-    // Удаляем пароли пользователей перед возвратом
     data.forEach(order => {
         if (order.user) (order.user as any).password = undefined;
     });
@@ -149,10 +136,8 @@ export class OrdersService {
     return { data, count };
   }
 
-  // Метод findOne, работающий и для админа, и для пользователя
   async findOne(id: number, user?: User): Promise<Order> { 
      const whereCondition: any = { id };
-     // Если user передан и он не админ, ищем только его заказы
      if (user && user.role !== Role.Admin) { 
          whereCondition.user = { id: user.id };
      }
@@ -164,22 +149,19 @@ export class OrdersService {
      if (!order) {
        throw new NotFoundException(`Заказ с ID ${id} не найден.`);
      }
-     // Удаляем пароль пользователя перед возвратом
      if (order.user) {
          (order.user as any).password = undefined;
      }
      return order;
   }
   
-  // Метод для обновления статуса заказа (для админа)
   async updateStatus(
     orderId: number,
     updateOrderStatusDto: UpdateOrderStatusDto,
   ): Promise<Order> {
-    // Находим заказ без проверки пользователя
     const order = await this.orderRepository.findOne({ 
         where: { id: orderId },
-        relations: ['user'] // Подгружаем пользователя для возврата
+        relations: ['user']
      });
 
     if (!order) {
@@ -194,7 +176,5 @@ export class OrdersService {
     }
     return savedOrder;
   }
-  
-  // remove пока не реализуем детально
-  // async remove(id: number): Promise<void> { ... }
+
 }

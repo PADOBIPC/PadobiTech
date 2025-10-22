@@ -9,9 +9,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { Role } from '../auth/roles.enum';
 import { genSalt, hash } from 'bcrypt';
 
-// ✅ ПРАВИЛЬНОЕ МОКИРОВАНИЕ BCRYPT
-// Мы мокируем ВЕСЬ модуль 'bcrypt' ПЕРЕД describe блоком
-// И создаем мок-функции для genSalt и hash
+// МОКИРОВАНИЕ BCRYPT
+
 jest.mock('bcrypt', () => {
   const mockGenSalt = jest.fn().mockResolvedValue('randomSalt');
   const mockHash = jest.fn().mockResolvedValue('hashedPassword');
@@ -34,7 +33,6 @@ describe('UsersService', () => {
   let userRepository: MockRepository<User>;
 
   beforeEach(async () => {
-    // Убираем jest.spyOn из beforeEach
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -93,7 +91,6 @@ describe('UsersService', () => {
       // Assert
       expect(result).toEqual(expectedResult); 
       expect(userRepository.findOneBy).toHaveBeenCalledWith({ email: createUserDto.email });
-      // Проверяем вызовы моков bcrypt
       expect((genSalt as jest.Mock)).toHaveBeenCalled(); 
       expect((hash as jest.Mock)).toHaveBeenCalledWith(createUserDto.password, 'randomSalt'); 
       expect(userRepository.create).toHaveBeenCalledWith({
@@ -113,7 +110,6 @@ describe('UsersService', () => {
       // Act & Assert
       await expect(service.create(createUserDto)).rejects.toThrow(ConflictException);
       expect(userRepository.findOneBy).toHaveBeenCalledWith({ email: createUserDto.email });
-      // Убеждаемся, что хэширование не вызывалось
       expect((hash as jest.Mock)).not.toHaveBeenCalled(); 
       expect(userRepository.create).not.toHaveBeenCalled();
       expect(userRepository.save).not.toHaveBeenCalled();
@@ -188,4 +184,4 @@ describe('UsersService', () => {
        expect(userRepository.findOneBy).toHaveBeenCalledWith({ email: userEmail });
     });
   });
-}); // Конец describe('UsersService')
+});

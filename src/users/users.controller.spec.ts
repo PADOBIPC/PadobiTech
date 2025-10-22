@@ -6,13 +6,11 @@ import { User } from './entities/user.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Role } from '../auth/roles.enum';
 
-// Мок UsersService
 const mockUsersService = {
   create: jest.fn(),
-  // findOne: jest.fn(), // findOne вызывается косвенно через req.user
 };
 
-// Мок объекта запроса (req) с пользователем
+
 const mockRequest = (user: any) => ({
   user: user,
 });
@@ -48,7 +46,7 @@ describe('UsersController', () => {
   describe('create (register)', () => {
     it('should call service.create and return the result', async () => {
       const createDto: CreateUserDto = { email: 'test@test.com', password: 'password' };
-      const expectedResult = { id: 1, email: 'test@test.com', role: Role.User } as User; // Без пароля
+      const expectedResult = { id: 1, email: 'test@test.com', role: Role.User } as User;
       mockUsersService.create.mockResolvedValue(expectedResult);
 
       const result = await controller.create(createDto);
@@ -61,16 +59,15 @@ describe('UsersController', () => {
   describe('getProfile (me)', () => {
     it('should return the user object from the request (without password)', async () => {
       // Arrange
-      const userFromReq = { id: 1, email: 'test@test.com', role: Role.User } as User; // Пользователь без пароля
+      const userFromReq = { id: 1, email: 'test@test.com', role: Role.User } as User;
       const req = mockRequest(userFromReq);
 
       // Act
-      const result = controller.getProfile(req); // Метод синхронный
+      const result = controller.getProfile(req);
 
       // Assert
       expect(result).toEqual(userFromReq);
-      // Проверяем, что сервис не вызывался напрямую
-      // expect(service.findOne).not.toHaveBeenCalled();
+
     });
   });
 });

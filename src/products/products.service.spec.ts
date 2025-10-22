@@ -61,7 +61,7 @@ describe('ProductsService', () => {
 
     productRepository.createQueryBuilder!.mockReturnValue(mockQueryBuilder as any);
     
-    // ✅ ДОБАВЛЯЕМ СБРОС МОКОВ ПЕРЕД КАЖДЫМ ТЕСТОМ
+    // СБРОС МОКОВ ПЕРЕД КАЖДЫМ ТЕСТОМ
     jest.clearAllMocks(); 
   });
 
@@ -135,7 +135,7 @@ describe('ProductsService', () => {
        expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith('product.price', 'DESC');
        expect(mockQueryBuilder.skip).toHaveBeenCalledWith(40);
        expect(mockQueryBuilder.take).toHaveBeenCalledWith(20);
-       expect(mockQueryBuilder.getManyAndCount).toHaveBeenCalledTimes(1); // Теперь должно быть 1 раз
+       expect(mockQueryBuilder.getManyAndCount).toHaveBeenCalledTimes(1);
     });
 
      it('should allow sorting by manufacturerName', async () => {

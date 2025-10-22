@@ -5,14 +5,13 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { User } from '../users/entities/user.entity';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 
-// Группируем как подраздел Products
 @ApiTags('Products / Reviews')
 @Controller('products/:productId/reviews')
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard) // Защищаем - нужен токен
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Add a review to a product (Authenticated users only)' })
   @ApiParam({ name: 'productId', description: 'ID of the product being reviewed', type: Number })
